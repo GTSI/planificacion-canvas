@@ -1,0 +1,44 @@
+origen: 
+  development:
+    host: localhost
+    adapter: postgresql
+    encoding: utf8
+    database: canvas_restore_20180925
+    username: postgres
+    password: 123
+    timeout: 5000
+
+
+  production:
+    host: localhost
+    adapter: postgresql
+    encoding: utf8
+    database: canvas_restore_20180925
+    username: postgres
+    password: 123
+    timeout: 5000
+
+destino: 
+  development:
+    host: localhost
+    adapter: postgresql
+    encoding: utf8
+    database: canvas_restore_20180925
+    username: postgres
+    password: 123
+    timeout: 5000
+
+
+  production:
+    host: localhost
+    adapter: postgresql
+    encoding: utf8
+    database: canvas_restore_20180925
+    username: postgres
+    password: 123
+    timeout: 5000
+
+  	ssh:
+   	  username: postgres
+      password: 123
+      ip: 192.168.1.1
