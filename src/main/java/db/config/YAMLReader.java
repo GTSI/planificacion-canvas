@@ -12,7 +12,7 @@ public class YAMLReader {
     Map readConfigFile() {
         try {
             Yaml configYAML = new Yaml();
-            InputStream inputStream = YAMLReader.class.getClassLoader().getResourceAsStream("config/database.yml");
+            InputStream inputStream = YAMLReader.class.getClassLoader().getResourceAsStream("database.yml");
             Map <String, Object> dataLoaded = (Map<String, Object>) configYAML.load(inputStream);
 
             System.out.println("Archivo de configuracion cargado satisfactoriamente" );

@@ -63,3 +63,6 @@ fabric.properties
 .idea/httpRequests
 
 src/main/java/db/config/database.yml
+src/main/resources/database.yml
+
+target/

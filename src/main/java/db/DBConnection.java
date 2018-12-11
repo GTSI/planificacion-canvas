@@ -16,6 +16,7 @@ public class DBConnection {
     private Connection connDestino;
 
     private DBConnection(ConfigData config) throws SQLException {
+        DriverManager.setLoginTimeout(5);
         try {
             Class.forName("org.postgresql.Driver");
             this.connOrigen = DriverManager.getConnection(config.strConnOrigen);
