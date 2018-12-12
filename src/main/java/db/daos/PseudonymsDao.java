@@ -74,15 +74,28 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
 
   }
 
-  public boolean userExistsByUniqueId(String unique_id) throws SQLException {
-    String sql = "SELECT * FROM pseudonyms p INNER JOIN users ON users.id = p.user_id WHERE p.workflow_state = 'active' AND lower(unique_id)='" + unique_id.trim().toLowerCase() + "'";
+  public boolean userExistsByUniqueId(String unique_id, String sis_user_id) throws SQLException {
+    String sql;
+
     ResultSet rsGetPseudonym = null;
-    PreparedStatement psfGetPseudonym = this.getConn().prepareStatement(sql);
-    psfGetPseudonym.setString(1, unique_id);
+    PreparedStatement psfGetPseudonym;
+    if(unique_id == null) {
+      sql = "SELECT * FROM pseudonyms p INNER JOIN users ON users.id = p.user_id WHERE p.workflow_state = 'active' AND (lower(sis_user_id)=?)";
+
+      psfGetPseudonym = this.getConn().prepareStatement(sql);
+      psfGetPseudonym.setString(1, sis_user_id.trim().toLowerCase());
+    }
+    else {
+      sql = "SELECT * FROM pseudonyms p INNER JOIN users ON users.id = p.user_id WHERE p.workflow_state = 'active' AND (lower(unique_id)=? or lower(sis_user_id)=?)";
+
+      psfGetPseudonym = this.getConn().prepareStatement(sql);
+      psfGetPseudonym.setString(1, unique_id.trim().toLowerCase());
+      psfGetPseudonym.setString(2, sis_user_id.trim().toLowerCase());
+    }
 
     rsGetPseudonym = psfGetPseudonym.executeQuery();
 
-    if (rsGetPseudonym.next())
+    if (!rsGetPseudonym.wasNull())
       return true;
 
     DbUtils.close(psfGetPseudonym);

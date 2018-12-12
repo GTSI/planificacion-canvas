@@ -32,16 +32,18 @@ public class CommunicationChannelDao extends AbstractDao implements Dao<Communic
 
   /* necesitamos los datos del usuario y del mig usuario para crear el communication channel */
   public long saveFromUserData(User user, MigUsuario migUsuario) {
+    if(migUsuario.getEmail() == null) return -1; // esto no deberia pasar pero existen usuarios que no tienen email ni usuario!
     PreparedStatement psfCrearCommunicationChannel = null;
     try {
 
-      psfCrearCommunicationChannel = this.getConn().prepareStatement("insert into communication_channels (path,path_type,position,user_id,created_at, updated_at) "
-        + " values (?,?,?,?,NOW(),NOW())", Statement.RETURN_GENERATED_KEYS);
+      psfCrearCommunicationChannel = this.getConn().prepareStatement("insert into communication_channels (path,path_type,position,user_id,created_at, updated_at,workflow_state) "
+        + " values (?,?,?,?,NOW(),NOW(),?)", Statement.RETURN_GENERATED_KEYS);
 
       psfCrearCommunicationChannel.setString(1, migUsuario.getEmail()); // path
       psfCrearCommunicationChannel.setString(2, "email"); // path_type
       psfCrearCommunicationChannel.setLong(3, 1); // position
       psfCrearCommunicationChannel.setLong(4, user.id); // id del usuario
+      psfCrearCommunicationChannel.setString(5, "active"); // workflow_state
 
       psfCrearCommunicationChannel.executeUpdate();
 

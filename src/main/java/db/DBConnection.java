@@ -16,12 +16,13 @@ public class DBConnection {
     private Connection connDestino;
 
     private DBConnection(ConfigData config) throws SQLException {
-        DriverManager.setLoginTimeout(5);
+        DriverManager.setLoginTimeout(10);
         try {
             Class.forName("org.postgresql.Driver");
             this.connOrigen = DriverManager.getConnection(config.strConnOrigen);
         } catch (ClassNotFoundException ex) {
             System.out.println("Origen database Connection Creation Failed : " + ex.getMessage());
+            ex.printStackTrace();
         }
 
         try {

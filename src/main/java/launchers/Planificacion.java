@@ -1,15 +1,15 @@
 package launchers;
 
+import bs.users.UserCanvasService;
 import db.DBConnection;
-import db.daos.UserDao;
 
 import java.sql.SQLException;
 
 public class Planificacion {
   public static void main(String[] args) throws SQLException {
     DBConnection configDB = DBConnection.getInstance("development");
-    UserDao dao = new UserDao(configDB.getConnectionDestino());
 
-    System.out.println(dao.get(1));
+    UserCanvasService service = UserCanvasService.getInstance(configDB.getConnectionDestino());
+    service.migrarUsuarios(); // Creacion de Usuarios dentro del sistema canvas, tomando su informacion desde la tabla mig_usuarios
   }
 }
