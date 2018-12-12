@@ -15,14 +15,14 @@ public class ConfigData {
         this.strConnDestino = "jdbc:postgresql://"
                 + destinoConfig.get("host")
                 + ":5432/"
-                + destinoConfig.get("database") + "?" + "user="
+                + destinoConfig.get("database") + "?" + "users="
                 + destinoConfig.get("username") + "&password="
                 + destinoConfig.get("password");
 
         this.strConnOrigen = "jdbc:postgresql://"
                 + origenConfig.get("host")
                 + ":5432/"
-                + origenConfig.get("database") + "?" + "user="
+                + origenConfig.get("database") + "?" + "users="
                 + origenConfig.get("username") + "&password="
                 + origenConfig.get("password");
 

@@ -1,4 +1,4 @@
-package db.models;
+package db.daos;
 
 import java.sql.Connection;
 

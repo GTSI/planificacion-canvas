@@ -1,10 +1,8 @@
 package db.daos;
 
-import db.models.AbstractDao;
 import db.models.User;
 import org.apache.commons.dbutils.DbUtils;
 
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;

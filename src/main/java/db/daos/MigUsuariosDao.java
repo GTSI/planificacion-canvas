@@ -1,6 +1,5 @@
 package db.daos;
 
-import db.models.AbstractDao;
 import db.models.MigUsuario;
 
 import java.sql.Connection;
