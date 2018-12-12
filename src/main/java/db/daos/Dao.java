@@ -8,10 +8,10 @@ public interface Dao<T> {
 
     Optional<T> get(long id) throws SQLException;
 
-    List<T> getAll();
+    List<T> getAll() throws SQLException;
 
-    void save(T t);
-    void saveAll(List<T> t);
+    long save(T t) throws Exception;
+    List<Long> saveAll(List<T> t);
 
     void update(T t, String[] params);
 

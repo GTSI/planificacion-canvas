@@ -53,4 +53,5 @@ public class User {
                 ", workflow_state='" + workflow_state + '\'' +
                 ", migration_id=" + migration_id;
     }
+
 }
