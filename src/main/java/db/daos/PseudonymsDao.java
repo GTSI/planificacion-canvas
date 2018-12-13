@@ -95,8 +95,10 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
 
     rsGetPseudonym = psfGetPseudonym.executeQuery();
 
-    if (!rsGetPseudonym.wasNull())
+    if (rsGetPseudonym.next()) {
+      System.out.println(rsGetPseudonym.getLong(1));
       return true;
+    }
 
     DbUtils.close(psfGetPseudonym);
     DbUtils.close(rsGetPseudonym);

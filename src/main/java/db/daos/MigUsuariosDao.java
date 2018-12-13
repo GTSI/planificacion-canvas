@@ -24,7 +24,7 @@ public class MigUsuariosDao extends AbstractDao implements Dao<MigUsuario> {
   @Override
   public List<MigUsuario> getAll() throws SQLException {
     Statement stmtGetMigUsuarios = this.getConn().createStatement();
-    ResultSet rsGetMigUsuarios = stmtGetMigUsuarios.executeQuery("SELECT * FROM mig_usuarios  where id is not null  and email is not null order by id;");
+    ResultSet rsGetMigUsuarios = stmtGetMigUsuarios.executeQuery("SELECT * FROM mig_usuarios  where id is not null  and email is not null and email like '%@%' order by id;");
 
     ArrayList<MigUsuario> usuarios = new ArrayList<>();
 
