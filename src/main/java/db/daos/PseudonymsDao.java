@@ -157,4 +157,25 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
       return -1;
     }
   }
+
+  public Pseudonym getPseudonymFromSisUserId(String sis_user_id) throws SQLException {
+    Statement stmtGetPseudonym = getConn().createStatement();
+    ResultSet rsGetPseudonym = stmtGetPseudonym.executeQuery(
+      "SELECT * FROM pseudonyms WHERE sis_user_id='"+sis_user_id+"'");
+
+    if(rsGetPseudonym.next()) {
+      return new Pseudonym(
+        rsGetPseudonym.getLong("id"),
+        rsGetPseudonym.getLong("user_id"),
+        rsGetPseudonym.getLong("account_id"),
+        rsGetPseudonym.getString("unique_id"),
+        rsGetPseudonym.getString("crypted_password"),
+        rsGetPseudonym.getString("password_salt"),
+        rsGetPseudonym.getLong("login_count"),
+        rsGetPseudonym.getString("sis_user_id"),
+        rsGetPseudonym.getLong("communication_channel_id")
+      );
+    }
+    return null;
+  }
 }

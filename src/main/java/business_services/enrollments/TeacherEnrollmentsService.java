@@ -1,12 +1,9 @@
 package business_services.enrollments;
 
 import db.config.PlanificacionConfig;
-import db.daos.CourseDao;
-import db.daos.CourseSectionsDao;
-import db.daos.RolesDao;
-import db.models.Course;
-import db.models.CourseSection;
-import db.models.Roles;
+import db.daos.*;
+import db.models.*;
+import helpers.CanvasConstants;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,13 +18,21 @@ public class TeacherEnrollmentsService {
   private CourseSectionsDao courseSectionsDao;
   private RolesDao rolesDao;
   private CourseDao courseDao;
+  private MigParaleloProfesorDao migParaleloProfesorDao;
+  private MigUsuariosDao migUsuariosDao;
+  private EnrollmentsDao enrollmentsDao;
+  private PseudonymsDao pseudonymsDao;
 
   private static TeacherEnrollmentsService instance;
 
   private TeacherEnrollmentsService(
     CourseSectionsDao courseSectionsDao,
     RolesDao rolesDao,
-  CourseDao courseDao,
+    CourseDao courseDao,
+    MigParaleloProfesorDao migParaleloProfesorDao,
+    MigUsuariosDao migUsuariosDao,
+    EnrollmentsDao enrollmentsDao,
+    PseudonymsDao pseudonymsDao,
     int terminoOrigen, int terminoDestino
   ) {
     this.terminoDestino = terminoDestino;
@@ -35,6 +40,10 @@ public class TeacherEnrollmentsService {
     this.courseSectionsDao = courseSectionsDao;
     this.rolesDao = rolesDao;
     this.courseDao = courseDao;
+    this.migParaleloProfesorDao = migParaleloProfesorDao;
+    this.migUsuariosDao = migUsuariosDao;
+    this.enrollmentsDao = enrollmentsDao;
+    this.pseudonymsDao = pseudonymsDao;
   }
 
   public static TeacherEnrollmentsService getInstance(
@@ -45,34 +54,73 @@ public class TeacherEnrollmentsService {
         new CourseSectionsDao(conn),
         new RolesDao(conn),
         new CourseDao(conn),
+        new MigParaleloProfesorDao(conn),
+        new MigUsuariosDao(conn),
+        new EnrollmentsDao(conn),
+        new PseudonymsDao(conn),
         planificacionConfig.getOrigen(), planificacionConfig.getDestino());
     }
 
     return instance;
   }
 
-  /* Esta funcion se encarga de la creacion de los enrollments
+  /* Este metodo se encarga de la creacion de los enrollments
     de los profesores a cada curso
     dentro del termino designado.
     SOLO CREACION */
-  public void txCrearEnrollments() {
+
+  public void CrearEnrollments() throws SQLException {
+
+    List<CourseSection> courseSections = null;
+
+    courseSections = courseSectionsDao.getCourseSectionsFromEnrollmentTerm(terminoDestino);
+
+    for (CourseSection courseSection : courseSections) {
+      Optional<Course> optionalCourse = courseDao.get(courseSection.getCourse_id());
+      if (optionalCourse.isPresent()) {
+        Course course = optionalCourse.get();
+
+        List<MigParaleloProfesor> profesores = migParaleloProfesorDao.getUsersFromIDMateria(Integer.parseInt(course.getMigration_id()));
+        for(MigParaleloProfesor profesor: profesores) {
+          txCrearEnrollmentProfesor(profesor, course, courseSection);
+        }
+      }
+    }
+  }
+
+  private void txCrearEnrollmentProfesor(MigParaleloProfesor profesor,
+                                         Course course,
+                                         CourseSection courseSection) {
+
     Connection conn = rolesDao.getConn();
     try {
       conn.setAutoCommit(false);
-      Roles roleTeacher = rolesDao.getFromName("TeacherEnrollment");
-      List<CourseSection> courseSections = courseSectionsDao.getCourseSectionsFromEnrollmentTerm(terminoDestino);
-      for(CourseSection courseSection: courseSections) {
-        Optional<Course > optionalCourse = courseDao.get(courseSection.getCourse_id());
-        if(optionalCourse.isPresent()) {
-          Course course = optionalCourse.get();
 
-        }
-      }
+      Roles roleTeacher = rolesDao.getFromName("TeacherEnrollment");
+
+      if(enrollmentsDao.existeEnrollment(profesor.getCedula(),roleTeacher.getId(), courseSection.getId() )) {
+
+        Pseudonym pseudonymProfesor = pseudonymsDao.getPseudonymFromSisUserId(profesor.getCedula());
+
+        enrollmentsDao.save(new Enrollment(
+          -1,
+          pseudonymProfesor.user_id,
+          course.getId(),
+          roleTeacher.getName(),
+          null,// uuid nunca se toca.
+          "active" ,
+          courseSection.getId(),
+          CanvasConstants.PARENT_ACCOUNT_ID,
+          "unpublished",
+          false,
+          roleTeacher.getId(),
+          true ));
+      } else System.err.println("Ignorando usuario inexistente en nuestra base " + profesor);
 
     } catch (SQLException e) {
       e.printStackTrace();
       try {
-        System.err.println("transaccion de los enrollments no se pudo realizar!");
+        System.err.println("transaccion del enrollment " + profesor + " no se pudo realizar!");
         conn.rollback();
       } catch (SQLException excep) { }
     } finally {

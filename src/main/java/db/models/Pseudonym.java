@@ -33,7 +33,13 @@ public class Pseudonym {
   @Nullable
   public long communication_channel_id;
 
-  public Pseudonym(long id, long user_id, long account_id, String unique_id, String crypted_password, String password_salt, long login_count, String sis_user_id, long communication_channel_id) {
+  public Pseudonym(long id,
+                   long user_id,
+                   long account_id,
+                   String unique_id,
+                   String crypted_password,
+                   String password_salt,
+                   long login_count, String sis_user_id, long communication_channel_id) {
     this.id = id;
     this.user_id = user_id;
     this.account_id = account_id;
