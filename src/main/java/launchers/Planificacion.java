@@ -1,9 +1,8 @@
 package launchers;
 
-import bs.courses.CoursesCanvasService;
-import bs.users.UserCanvasService;
+import business_services.courses.CoursesCanvasService;
+import business_services.users.UserCanvasService;
 import db.DBConnection;
-import db.config.ConfigData;
 import db.config.PlanificacionConfig;
 import helpers.CanvasConstants;
 

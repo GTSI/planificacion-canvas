@@ -1,11 +1,10 @@
 package db.daos;
 
+import com.sun.istack.internal.Nullable;
 import db.models.MigUsuario;
+import org.apache.commons.dbutils.DbUtils;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -68,4 +67,38 @@ public class MigUsuariosDao extends AbstractDao implements Dao<MigUsuario> {
   public int count() throws SQLException {
     return 0;
   }
+
+  public @Nullable
+  MigUsuario getFromMatricula(String matricula) throws SQLException {
+
+    PreparedStatement psfGetMigUsuario = null;
+
+    String sql = "select * from mig_usuarios where id=?";
+
+    psfGetMigUsuario = getConn().prepareStatement(sql);
+
+    psfGetMigUsuario.setString(1, matricula);
+
+    ResultSet rsGetMigUsuario = psfGetMigUsuario.executeQuery();
+
+
+    if (rsGetMigUsuario.next()) {
+
+      MigUsuario migUsuario = new MigUsuario(
+        rsGetMigUsuario.getString("id"),
+        rsGetMigUsuario.getString("nombres"),
+        rsGetMigUsuario.getString("apellidos"),
+        rsGetMigUsuario.getString("email"),
+        rsGetMigUsuario.getString("username"));
+
+      DbUtils.close(psfGetMigUsuario);
+      DbUtils.close(rsGetMigUsuario);
+
+      return migUsuario;
+
+    }
+
+    return null;
+  }
+
 }

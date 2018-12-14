@@ -1,4 +1,4 @@
-package bs.users;
+package business_services.users;
 
 import db.daos.*;
 import db.models.MigUsuario;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class UserCanvasService {
   private UserDao userDao;
-  private PseudonymsDao pseudonymsDao;
+  private PseudonymsDao pseuonymsDao;
   private CommunicationChannelDao communicationChannelDao;
   private UserAccountAssociationDao userAccountAssociationDao;
   private MigUsuariosDao migUsuariosDao;

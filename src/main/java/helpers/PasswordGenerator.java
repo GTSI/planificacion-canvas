@@ -1,6 +1,6 @@
 package helpers;
 
-import bs.users.data.PasswordData;
+import business_services.users.data.PasswordData;
 
 public class PasswordGenerator {
 

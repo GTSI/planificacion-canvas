@@ -1,7 +1,7 @@
 package db.daos;
 
-import bs.courses.data.CourseData;
-import bs.courses.data.MigParaleloProfesorData;
+import business_services.courses.data.CourseData;
+import business_services.courses.data.MigParaleloProfesorData;
 import db.models.Course;
 import helpers.CanvasConstants;
 import org.apache.commons.dbutils.DbUtils;

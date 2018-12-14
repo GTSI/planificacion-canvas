@@ -1,6 +1,6 @@
 package db.daos;
 
-import bs.users.data.PasswordData;
+import business_services.users.data.PasswordData;
 import com.sun.istack.internal.NotNull;
 import db.models.MigUsuario;
 import db.models.Pseudonym;

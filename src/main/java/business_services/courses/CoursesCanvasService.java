@@ -1,11 +1,12 @@
-package bs.courses;
+package business_services.courses;
 
-  import bs.courses.data.CourseData;
-  import bs.courses.data.MigParaleloProfesorData;
+  import business_services.courses.data.CourseData;
+  import business_services.courses.data.MigParaleloProfesorData;
   import com.sun.istack.internal.NotNull;
   import db.config.PlanificacionConfig;
   import db.daos.*;
   import db.models.Course;
+  import db.models.CourseAccountAssociation;
   import db.models.CourseSection;
   import db.models.Wiki;
   import helpers.CanvasConstants;
@@ -26,6 +27,7 @@ public class CoursesCanvasService {
   private CourseDao courseDao;
   private WikisDao wikisDao;
   private CourseSectionsDao courseSectionsDao;
+  private CourseAccountAssociationDao courseAccountAssociationDao;
 
   private int terminoOrigen = -1;
   private int terminoDestino = -1;
@@ -42,6 +44,7 @@ public class CoursesCanvasService {
                                CourseDao courseDao,
                                WikisDao wikisDao,
                                CourseSectionsDao courseSectionDao,
+                               CourseAccountAssociationDao courseAccountAssociationDao,
                                int terminoOrigen, int terminoDestino
   ) throws SQLException {
     this.userDao = userDao;
@@ -55,6 +58,7 @@ public class CoursesCanvasService {
     this.courseDao = courseDao;
     this.wikisDao = wikisDao;
     this.courseSectionsDao = courseSectionDao;
+    this.courseAccountAssociationDao = courseAccountAssociationDao;
     this.terminoDestino = terminoDestino;
   }
 
@@ -70,6 +74,7 @@ public class CoursesCanvasService {
         new CourseDao(conn),
         new WikisDao(conn),
         new CourseSectionsDao(conn),
+        new CourseAccountAssociationDao(conn),
         planificacionConfig.getOrigen(), planificacionConfig.getDestino());
     }
 
@@ -169,7 +174,7 @@ public class CoursesCanvasService {
         -1,
         paralelo.nombre_materia,
         CanvasConstants.PARENT_ACCOUNT_ID,
-        "active",
+        "available",
         "<p>Bienvenidos al curso</p>",
         false,
         "teachers",
@@ -197,6 +202,12 @@ public class CoursesCanvasService {
         true,
         null,
         null
+      ));
+
+      courseAccountAssociationDao.save(new CourseAccountAssociation(
+        cursoCreado.getId(),
+        CanvasConstants.PARENT_ACCOUNT_ID,
+        courseSectionCreado.getId()
       ));
 
     } catch (SQLException e) {

@@ -1,4 +1,4 @@
-package bs.courses.data;
+package business_services.courses.data;
 
 public final class CourseData {
 

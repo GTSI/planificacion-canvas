@@ -1,6 +1,6 @@
 package db.daos;
 
-import bs.courses.data.MigParaleloProfesorData;
+import business_services.courses.data.MigParaleloProfesorData;
 import db.models.MigMateriaParalelo;
 
 import java.sql.Connection;

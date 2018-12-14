@@ -1,10 +1,10 @@
 package db.daos;
 
-import bs.courses.data.CourseData;
 import db.models.CourseSection;
 import org.apache.commons.dbutils.DbUtils;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,5 +84,37 @@ public class CourseSectionsDao extends AbstractDao implements Dao<CourseSection>
   @Override
   public int count() throws SQLException {
     return 0;
+  }
+
+  public List<CourseSection> getCourseSectionsFromEnrollmentTerm(long enrollment_term) throws SQLException {
+
+    String sql = "select * from course_sections where course_id in " +
+      "(select * from courses where workflow_state<>'deleted' and enrollment_term_id=?);";
+
+    ResultSet rsGetCourseSections = null;
+    PreparedStatement psfGetCourseSections = this.getConn().prepareStatement(sql);
+
+    psfGetCourseSections.setLong(1,enrollment_term);
+
+    rsGetCourseSections = psfGetCourseSections.executeQuery();
+
+    ArrayList<CourseSection> course_sections = new ArrayList<>();
+    while(rsGetCourseSections.next()) {
+      course_sections.add(new CourseSection(
+        rsGetCourseSections.getLong("id"),
+        rsGetCourseSections.getLong("course_id"),
+        rsGetCourseSections.getLong("root_account_id"),
+        rsGetCourseSections.getLong("enrollment_term_id"),
+        rsGetCourseSections.getString("name"),
+        rsGetCourseSections.getBoolean("default_section"),
+        rsGetCourseSections.getTimestamp("start_at"),
+        rsGetCourseSections.getTimestamp("end_at")
+      ));
+    }
+
+    DbUtils.close(psfGetCourseSections);
+    DbUtils.close(rsGetCourseSections);
+
+    return course_sections;
   }
 }

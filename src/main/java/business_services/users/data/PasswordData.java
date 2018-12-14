@@ -1,4 +1,4 @@
-package bs.users.data;
+package business_services.users.data;
 
 public final class PasswordData {
   public final String password;
