@@ -11,7 +11,7 @@ import java.util.List;
 
 public class UserCanvasService {
   private UserDao userDao;
-  private PseudonymsDao pseuonymsDao;
+  private PseudonymsDao pseudonymsDao;
   private CommunicationChannelDao communicationChannelDao;
   private UserAccountAssociationDao userAccountAssociationDao;
   private MigUsuariosDao migUsuariosDao;

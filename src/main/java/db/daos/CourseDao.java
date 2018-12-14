@@ -20,6 +20,34 @@ public class CourseDao extends AbstractDao implements Dao<Course>{
 
   @Override
   public Optional<Course> get(long id) throws SQLException {
+
+    Statement stmtGetCurso = this.getConn().createStatement();
+    ResultSet rsGetCurso = stmtGetCurso.executeQuery(
+      "SELECT * FROM courses where id=" +id);
+
+    if(rsGetCurso.next()) {
+      return Optional.of(new Course(
+        rsGetCurso.getLong("id"),
+        rsGetCurso.getString("name"),
+        rsGetCurso.getLong("account_id"),
+        rsGetCurso.getString("workflow_state"),
+        rsGetCurso.getString("syllabus_body"),
+        rsGetCurso.getBoolean("allow_student_forum_attachments"),
+        rsGetCurso.getString("default_wiki_editing_roles"),
+        rsGetCurso.getLong("wiki_id"),
+        rsGetCurso.getBoolean("allow_student_organized_groups"),
+        rsGetCurso.getString("course_code"),
+        rsGetCurso.getString("default_view"),
+        rsGetCurso.getLong("root_account_id"),
+        rsGetCurso.getLong("enrollment_term_id"),
+        rsGetCurso.getString("tab_configuration"),
+        rsGetCurso.getString("sis_teacher_id"),
+        rsGetCurso.getTimestamp("start_at"),
+        rsGetCurso.getTimestamp("conclude_at"),
+        rsGetCurso.getString("migration_id")
+      ));
+    }
+
     return Optional.empty();
   }
 

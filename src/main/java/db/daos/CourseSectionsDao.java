@@ -88,7 +88,7 @@ public class CourseSectionsDao extends AbstractDao implements Dao<CourseSection>
 
   public List<CourseSection> getCourseSectionsFromEnrollmentTerm(long enrollment_term) throws SQLException {
 
-    String sql = "select * from course_sections where course_id in " +
+    String sql = "select * from course_sections where workflow_state<>'deleted' and course_id in " +
       "(select * from courses where workflow_state<>'deleted' and enrollment_term_id=?);";
 
     ResultSet rsGetCourseSections = null;
