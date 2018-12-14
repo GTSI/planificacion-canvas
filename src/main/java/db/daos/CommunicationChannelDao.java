@@ -30,6 +30,11 @@ public class CommunicationChannelDao extends AbstractDao implements Dao<Communic
     return 0;
   }
 
+  @Override
+  public CommunicationChannel saveAndRetrieveIntance(CommunicationChannel communicationChannel) throws Exception {
+    return null;
+  }
+
   /* necesitamos los datos del usuario y del mig usuario para crear el communication channel */
   public long saveFromUserData(User user, MigUsuario migUsuario) {
     if(migUsuario.getEmail() == null) return -1; // esto no deberia pasar pero existen usuarios que no tienen email ni usuario!
@@ -78,5 +83,10 @@ public class CommunicationChannelDao extends AbstractDao implements Dao<Communic
   @Override
   public void delete(CommunicationChannel communicationChannel) {
 
+  }
+
+  @Override
+  public int count() throws SQLException {
+    return 0;
   }
 }

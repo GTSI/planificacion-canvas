@@ -9,10 +9,10 @@ import java.util.Map;
 public class YAMLReader {
 
     public static @Nullable
-    Map readConfigFile() {
+    Map readConfigFile(String filename) {
         try {
             Yaml configYAML = new Yaml();
-            InputStream inputStream = YAMLReader.class.getClassLoader().getResourceAsStream("database.yml");
+            InputStream inputStream = YAMLReader.class.getClassLoader().getResourceAsStream(filename);
             Map <String, Object> dataLoaded = (Map<String, Object>) configYAML.load(inputStream);
 
             System.out.println("Archivo de configuracion cargado satisfactoriamente" );

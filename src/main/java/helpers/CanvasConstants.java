@@ -6,4 +6,7 @@ public class CanvasConstants {
   pero para maestrias tal vez se les deba asociar la cuenta de ESPAE representada con el 8 */
   public static int PARENT_ACCOUNT_ID = 1;
 
+  public enum TIPO_PLANIFICACION {
+   MAESTRIAS, PREGRADO, ADMISIONES
+  }
 }

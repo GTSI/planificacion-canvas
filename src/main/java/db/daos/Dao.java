@@ -11,10 +11,15 @@ public interface Dao<T> {
     List<T> getAll() throws SQLException;
 
     long save(T t) throws Exception;
+
+    T saveAndRetrieveIntance(T t) throws Exception;
+
     List<Long> saveAll(List<T> t);
 
     void update(T t, String[] params);
 
     void delete(T t);
+
+    int count()throws SQLException;
 
 }

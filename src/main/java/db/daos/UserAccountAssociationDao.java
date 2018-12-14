@@ -30,6 +30,11 @@ public class UserAccountAssociationDao extends AbstractDao implements Dao<UserAc
     return 0;
   }
 
+  @Override
+  public UserAccountAssociation saveAndRetrieveIntance(UserAccountAssociation userAccountAssociation) throws Exception {
+    return null;
+  }
+
   public long saveFromUser(User user) {
     PreparedStatement psfCrearUserAccountAssociation = null;
     try {
@@ -74,5 +79,10 @@ public class UserAccountAssociationDao extends AbstractDao implements Dao<UserAc
   @Override
   public void delete(UserAccountAssociation userAccountAssociation) {
 
+  }
+
+  @Override
+  public int count() throws SQLException {
+    return 0;
   }
 }

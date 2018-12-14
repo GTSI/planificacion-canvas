@@ -46,6 +46,11 @@ public class MigUsuariosDao extends AbstractDao implements Dao<MigUsuario> {
   }
 
   @Override
+  public MigUsuario saveAndRetrieveIntance(MigUsuario migUsuario) throws Exception {
+    return null;
+  }
+
+  @Override
   public List<Long> saveAll(List<MigUsuario> t) {
     return null;
   }
@@ -57,5 +62,10 @@ public class MigUsuariosDao extends AbstractDao implements Dao<MigUsuario> {
 
   @Override
   public void delete(MigUsuario migUsuario) {
+  }
+
+  @Override
+  public int count() throws SQLException {
+    return 0;
   }
 }

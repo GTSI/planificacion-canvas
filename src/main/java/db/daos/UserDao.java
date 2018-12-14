@@ -75,6 +75,11 @@ public class UserDao extends AbstractDao implements Dao<User> {
   }
 
   @Override
+  public User saveAndRetrieveIntance(User user) throws Exception {
+    return null;
+  }
+
+  @Override
   public List<Long> saveAll(List<User> t) {
     return null;
   }
@@ -86,6 +91,11 @@ public class UserDao extends AbstractDao implements Dao<User> {
   @Override
   public void delete(User user) {
 
+  }
+
+  @Override
+  public int count() throws SQLException {
+    return 0;
   }
 
 }

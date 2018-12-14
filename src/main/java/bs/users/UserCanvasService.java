@@ -47,7 +47,7 @@ public class UserCanvasService {
 
   /* Transaccion utilizada para crear o actualizar un usuario junto los siguientes datos relacionados:
    * @param communication_channels, pseudonyms, user_account_associations */
-  public void createOrUpdateUserDB(MigUsuario migUser) {
+  private void createOrUpdateUserDB(MigUsuario migUser) {
 
       /* Si el usuario ya existe debemos solo actualizar su informacion. */
     try {
@@ -69,7 +69,7 @@ public class UserCanvasService {
   }
 
   /* transaccion usada para actualizar un usuario modificando las tablas necesarias en el canvas */
-  public void txUpdateUser(MigUsuario migUser) throws SQLException {
+  private void txUpdateUser(MigUsuario migUser) throws SQLException {
     System.out.println("Aun no esta implementado el metodo para realizar la actualizacion de informacion de los usuarios" + migUser);
     return;
   }
@@ -93,16 +93,23 @@ public class UserCanvasService {
       long idCommChannel = communicationChannelDao.saveFromUserData(usuarioNuevo, migUser);
 
       if (idCommChannel == -1) {
+        System.err.println("No se pudo crear el correo: " + usuarioNuevo);
         throw new SQLException();
       }
 
       long idUserAccountAssociation = userAccountAssociationDao.saveFromUser(usuarioNuevo);
 
       if (idUserAccountAssociation == -1) {
+        System.err.println("No se pudo crear el user account association: " + usuarioNuevo);
         throw new SQLException();
       }
 
       long idPseudonym = pseudonymsDao.saveFromUserData(usuarioNuevo, migUser);
+
+      if (idPseudonym == -1) {
+        System.err.println("No se pudo crear el user seudonimo: " + usuarioNuevo);
+        throw new SQLException();
+      }
 
     } catch (SQLException e) {
       e.printStackTrace();

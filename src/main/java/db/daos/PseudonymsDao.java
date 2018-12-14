@@ -1,6 +1,7 @@
 package db.daos;
 
 import bs.users.data.PasswordData;
+import com.sun.istack.internal.NotNull;
 import db.models.MigUsuario;
 import db.models.Pseudonym;
 import db.models.User;
@@ -60,6 +61,11 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
   }
 
   @Override
+  public Pseudonym saveAndRetrieveIntance(Pseudonym pseudonym) throws Exception {
+    return null;
+  }
+
+  @Override
   public List<Long> saveAll(List<Pseudonym> t) {
     return null;
   }
@@ -74,7 +80,12 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
 
   }
 
-  public boolean userExistsByUniqueId(String unique_id, String sis_user_id) throws SQLException {
+  @Override
+  public int count() throws SQLException {
+    return 0;
+  }
+
+  public boolean userExistsByUniqueId(@NotNull  String unique_id, @NotNull String sis_user_id) throws SQLException {
     String sql;
 
     ResultSet rsGetPseudonym = null;
