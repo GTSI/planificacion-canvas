@@ -35,6 +35,7 @@ public class TeacherEnrollmentsService {
     MigUsuariosDao migUsuariosDao,
     EnrollmentsDao enrollmentsDao,
     PseudonymsDao pseudonymsDao,
+    EnrollmentStateDao enrollmentStateDao,
     int terminoOrigen, int terminoDestino
   ) {
     this.terminoDestino = terminoDestino;
@@ -46,6 +47,7 @@ public class TeacherEnrollmentsService {
     this.migUsuariosDao = migUsuariosDao;
     this.enrollmentsDao = enrollmentsDao;
     this.pseudonymsDao = pseudonymsDao;
+    this.enrollmentStateDao = enrollmentStateDao;
   }
 
   public static TeacherEnrollmentsService getInstance(
@@ -60,6 +62,7 @@ public class TeacherEnrollmentsService {
         new MigUsuariosDao(conn),
         new EnrollmentsDao(conn),
         new PseudonymsDao(conn),
+        new EnrollmentStateDao(conn),
         planificacionConfig.getOrigen(), planificacionConfig.getDestino());
     }
 
@@ -110,7 +113,7 @@ public class TeacherEnrollmentsService {
           if(pseudonymProfesor == null)
             pseudonymProfesor = Objects.requireNonNull(pseudonymsDao.getFromUniqueId(migUsuarioProfesor.getUsername())).get();
 
-          enrollmentsDao.save(new Enrollment(
+          long enrollment_id = enrollmentsDao.save(new Enrollment(
             -1,
             pseudonymProfesor.user_id,
             course.getId(),
@@ -123,6 +126,17 @@ public class TeacherEnrollmentsService {
             false,
             roleTeacher.getId(),
             true ));
+
+          enrollmentStateDao.saveAndRetrieveIntance(new EnrollmentState(
+            enrollment_id,
+            "active",
+            true,
+            null,
+            null,
+            false,
+            true,
+            1));
+
         } else {
           System.err.println("Usuario no existe " + profesor);
         }
