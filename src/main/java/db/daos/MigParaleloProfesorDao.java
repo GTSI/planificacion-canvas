@@ -75,9 +75,9 @@ public class MigParaleloProfesorDao extends AbstractDao implements Dao<MigParale
   public List<MigParaleloProfesor> getUsersFromIDMateria(int idmateria) throws SQLException {
     Statement stmtGetMigParaleloProfesores = this.getConn().createStatement();
     ResultSet rsGetMigParaleloProfesores = stmtGetMigParaleloProfesores.executeQuery(
-      "SELECT * FROM mig_paralelo_profesor  " +
+      "SELECT distinct * FROM mig_paralelo_profesor  " +
         "where id is not null  " +
-        "and cedula is not null and cedula not like 'FI%' order by id and idmateria="+idmateria);
+        "and cedula is not null and cedula not like 'FI%' and idmateria="+idmateria + " order by id ");
 
     ArrayList<MigParaleloProfesor> usuarios = new ArrayList<>();
 

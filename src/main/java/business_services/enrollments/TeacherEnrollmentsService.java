@@ -8,6 +8,7 @@ import helpers.CanvasConstants;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class TeacherEnrollmentsService {
@@ -69,7 +70,7 @@ public class TeacherEnrollmentsService {
     dentro del termino designado.
     SOLO CREACION */
 
-  public void CrearEnrollments() throws SQLException {
+  public void crearEnrollments() throws SQLException {
 
     List<CourseSection> courseSections = null;
 
@@ -97,25 +98,35 @@ public class TeacherEnrollmentsService {
       conn.setAutoCommit(false);
 
       Roles roleTeacher = rolesDao.getFromName("TeacherEnrollment");
+      MigUsuario migUsuarioProfesor = migUsuariosDao.getFromMatricula(profesor.getCedula());
 
-      if(enrollmentsDao.existeEnrollment(profesor.getCedula(),roleTeacher.getId(), courseSection.getId() )) {
-
+      if(migUsuarioProfesor != null   && !enrollmentsDao.existeEnrollment(migUsuarioProfesor.getUsername(), profesor.getCedula(), roleTeacher.getId(), courseSection.getId() ) ) {
+        System.out.println("Creando enrollment" + profesor);
         Pseudonym pseudonymProfesor = pseudonymsDao.getPseudonymFromSisUserId(profesor.getCedula());
 
-        enrollmentsDao.save(new Enrollment(
-          -1,
-          pseudonymProfesor.user_id,
-          course.getId(),
-          roleTeacher.getName(),
-          null,// uuid nunca se toca.
-          "active" ,
-          courseSection.getId(),
-          CanvasConstants.PARENT_ACCOUNT_ID,
-          "unpublished",
-          false,
-          roleTeacher.getId(),
-          true ));
-      } else System.err.println("Ignorando usuario inexistente en nuestra base " + profesor);
+        if(pseudonymProfesor != null || (migUsuarioProfesor != null && migUsuarioProfesor.getUsername()!= null
+        && pseudonymsDao.getFromUniqueId(migUsuarioProfesor.getUsername()).isPresent())) {
+          if(pseudonymProfesor == null)
+            pseudonymProfesor = Objects.requireNonNull(pseudonymsDao.getFromUniqueId(migUsuarioProfesor.getUsername())).get();
+
+          enrollmentsDao.save(new Enrollment(
+            -1,
+            pseudonymProfesor.user_id,
+            course.getId(),
+            roleTeacher.getName(),
+            null,// uuid nunca se toca.
+            "active" ,
+            courseSection.getId(),
+            CanvasConstants.PARENT_ACCOUNT_ID,
+            "unpublished",
+            false,
+            roleTeacher.getId(),
+            true ));
+        } else {
+          System.err.println("Usuario no existe " + profesor);
+        }
+
+      } else System.err.println("Ignorando enrollment ya existente en nuestra base " + profesor);
 
     } catch (SQLException e) {
       e.printStackTrace();

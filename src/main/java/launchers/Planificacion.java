@@ -1,6 +1,7 @@
 package launchers;
 
 import business_services.courses.CoursesCanvasService;
+import business_services.enrollments.TeacherEnrollmentsService;
 import business_services.users.UserCanvasService;
 import db.DBConnection;
 import db.config.PlanificacionConfig;
@@ -22,6 +23,10 @@ public class Planificacion {
     CoursesCanvasService coursesCanvasService = CoursesCanvasService.getInstance(configDB.getConnectionDestino(), planificacionConfig);
     assert coursesCanvasService != null;
 
-    coursesCanvasService.planificarCursos(CanvasConstants.TIPO_PLANIFICACION.MAESTRIAS);
+    // coursesCanvasService.planificarCursos(CanvasConstants.TIPO_PLANIFICACION.MAESTRIAS);
+
+    TeacherEnrollmentsService teacherCanvasService = TeacherEnrollmentsService.getInstance(
+      configDB.getConnectionDestino(), planificacionConfig);
+    teacherCanvasService.crearEnrollments();
   }
 }

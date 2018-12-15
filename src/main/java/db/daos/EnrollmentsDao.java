@@ -83,9 +83,26 @@ public class EnrollmentsDao extends AbstractDao implements Dao<Enrollment> {
     return 0;
   }
 
+  public boolean existeEnrollment(String unique_id, String cedula, long role_id, long course_section_id) throws SQLException {
+    if(unique_id != null) {
+      String sql = "SELECT * FROM enrollments e" + " JOIN pseudonyms p ON e.user_id=p.user_id" +
+        " WHERE p.workflow_state<>'deleted' and e.workflow_state<>'deleted' and (p.sis_user_id='"
+        + cedula + "' or p.unique_id='"+unique_id+"')" +
+        " and e.role_id=" + role_id + " and e.course_section_id=" + course_section_id;
+
+      Statement stmtExistEnrollment = getConn().createStatement();
+      ResultSet rsExistsEnrollment = stmtExistEnrollment.executeQuery(sql);
+
+      return rsExistsEnrollment.next();
+    } else {
+      return existeEnrollment(cedula, role_id, course_section_id);
+    }
+  }
+
   public boolean existeEnrollment(String cedula, long role_id, long course_section_id) throws SQLException {
     String sql = "SELECT * FROM enrollments e" + " JOIN pseudonyms p ON e.user_id=p.user_id" +
-      " WHERE p.sis_user_id='" + cedula + "'" +
+      " WHERE p.workflow_state<>'deleted' and e.workflow_state<>'deleted' and (p.sis_user_id='"
+      + cedula + "')" +
       " and e.role_id=" + role_id + " and e.course_section_id=" + course_section_id;
 
     Statement stmtExistEnrollment = getConn().createStatement();
