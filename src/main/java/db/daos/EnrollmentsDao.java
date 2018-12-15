@@ -29,7 +29,7 @@ public class EnrollmentsDao extends AbstractDao implements Dao<Enrollment> {
       + "user_id, course_id, type, uuid, workflow_state, created_at, updated_at,"
       + "course_section_id, root_account_id,grade_publishing_status,"
       + "limit_privileges_to_course_section,role_id,from_script)"
-      + "VALUES (?, ?, ?, uuid_generate_v1(), ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?);";
+      + "VALUES (?, ?, ?, concat('maestrias', uuid_generate_v1()), ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?);";
 
     psfCrearEnrollment = this.getConn().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
@@ -87,7 +87,7 @@ public class EnrollmentsDao extends AbstractDao implements Dao<Enrollment> {
     if(unique_id != null) {
       String sql = "SELECT * FROM enrollments e" + " JOIN pseudonyms p ON e.user_id=p.user_id" +
         " WHERE p.workflow_state<>'deleted' and e.workflow_state<>'deleted' and (p.sis_user_id='"
-        + cedula + "' or p.unique_id='"+unique_id+"')" +
+        + cedula + "' or p.unique_id='"+unique_id+"' or p.unique_id=concat('"+unique_id+"','@espol.edu.ec'))" +
         " and e.role_id=" + role_id + " and e.course_section_id=" + course_section_id;
 
       Statement stmtExistEnrollment = getConn().createStatement();

@@ -23,6 +23,7 @@ public class TeacherEnrollmentsService {
   private MigUsuariosDao migUsuariosDao;
   private EnrollmentsDao enrollmentsDao;
   private PseudonymsDao pseudonymsDao;
+  private EnrollmentStateDao enrollmentStateDao;
 
   private static TeacherEnrollmentsService instance;
 

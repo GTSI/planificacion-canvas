@@ -21,10 +21,11 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
 
   public Optional<Pseudonym> getFromUniqueId(String unique_id) throws SQLException {
 
-    String sql = "SELECT * FROM pseudonyms WHERE unique_id=? and workflow_state<>'deleted'";
+    String sql = "SELECT * FROM pseudonyms WHERE (unique_id=? or unique_id=concat(?, '@espol.edu.ec')) and workflow_state<>'deleted'";
     ResultSet rsGetPseudonym = null;
     PreparedStatement psfGetPseudonym = this.getConn().prepareStatement(sql);
     psfGetPseudonym.setString(1, unique_id);
+    psfGetPseudonym.setString(2, unique_id);
 
     rsGetPseudonym = psfGetPseudonym.executeQuery();
 
@@ -91,13 +92,15 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
     ResultSet rsGetPseudonym = null;
     PreparedStatement psfGetPseudonym;
     if(unique_id == null) {
-      sql = "SELECT * FROM pseudonyms p INNER JOIN users ON users.id = p.user_id WHERE p.workflow_state = 'active' AND (lower(sis_user_id)=?)";
+      sql = "SELECT * FROM pseudonyms p INNER JOIN users ON users.id = p.user_id " +
+        "WHERE p.workflow_state <>'deleted' and users.workflow_state<>'deleted' AND (lower(sis_user_id)=?)";
 
       psfGetPseudonym = this.getConn().prepareStatement(sql);
       psfGetPseudonym.setString(1, sis_user_id.trim().toLowerCase());
     }
     else {
-      sql = "SELECT * FROM pseudonyms p INNER JOIN users ON users.id = p.user_id WHERE p.workflow_state = 'active' AND (lower(unique_id)=? or lower(sis_user_id)=?)";
+      sql = "SELECT * FROM pseudonyms p INNER JOIN users ON users.id = p.user_id " +
+        "WHERE p.workflow_state<>'deleted' AND users.workflow_state<>'deleted' AND (lower(unique_id)=? or lower(sis_user_id)=?)";
 
       psfGetPseudonym = this.getConn().prepareStatement(sql);
       psfGetPseudonym.setString(1, unique_id.trim().toLowerCase());
@@ -161,7 +164,7 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
   public Pseudonym getPseudonymFromSisUserId(String sis_user_id) throws SQLException {
     Statement stmtGetPseudonym = getConn().createStatement();
     ResultSet rsGetPseudonym = stmtGetPseudonym.executeQuery(
-      "SELECT * FROM pseudonyms WHERE sis_user_id='"+sis_user_id+"'");
+      "SELECT * FROM pseudonyms WHERE workflow_state<>'deleted' and sis_user_id='"+sis_user_id+"'");
 
     if(rsGetPseudonym.next()) {
       return new Pseudonym(

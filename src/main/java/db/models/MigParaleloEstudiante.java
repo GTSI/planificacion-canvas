@@ -32,4 +32,11 @@ public class MigParaleloEstudiante {
   private void cleanFields() {
     this.matricula = Objects.requireNonNull(this.matricula).trim().replaceAll("\"", "");
   }
+
+  @Override
+  public String toString() {
+    return "MigParaleloEstudiante " +
+      "idmateria=" + idmateria +
+      ", matricula='" + matricula + '\'';
+  }
 }
