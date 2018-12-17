@@ -85,7 +85,7 @@ public class TeacherEnrollmentsService {
       if (optionalCourse.isPresent()) {
         Course course = optionalCourse.get();
 
-        List<MigParaleloProfesor> profesores = migParaleloProfesorDao.getUsersFromIDMateria(Integer.parseInt(course.getMigration_id()));
+        List<MigParaleloProfesor> profesores = migParaleloProfesorDao.getUsersFromIDMateria(Integer.parseInt(course.getMigration_id() != null ? course.getMigration_id() : "-1"));
         for(MigParaleloProfesor profesor: profesores) {
           txCrearEnrollmentProfesor(profesor, course, courseSection);
         }

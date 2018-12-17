@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +73,7 @@ public class MigParaleloEstudianteDao extends AbstractDao implements Dao<MigPara
     ResultSet rsGetMigParaleloProfesores = stmtGetMigParaleloProfesores.executeQuery(
       "SELECT distinct * FROM mig_paralelo_estudiante  " +
         "where id is not null  " +
-        "and matricula is not null and matricula='1310373566' and idmateria="+idmateria + " order by id ");
+        "and matricula is not null and idmateria="+idmateria + " order by id ");
 
     ArrayList<MigParaleloEstudiante> usuarios = new ArrayList<>();
 

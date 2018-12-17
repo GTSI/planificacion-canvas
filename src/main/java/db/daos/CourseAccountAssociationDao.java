@@ -38,14 +38,19 @@ public class CourseAccountAssociationDao extends AbstractDao implements Dao<Cour
     psfCrearCourseAccountAssociation.setInt(3,0);
     psfCrearCourseAccountAssociation.setLong(4, courseAccountAssociation.getCourse_section_id());
 
-    ResultSet rsCrearCourseAccountAssociation  =  psfCrearCourseAccountAssociation.getGeneratedKeys();
+    psfCrearCourseAccountAssociation.executeUpdate();
+
+
+    ResultSet rsCrearCourseAccountAssociation = psfCrearCourseAccountAssociation.getGeneratedKeys();
+
+    rsCrearCourseAccountAssociation.next();
+
+    long id = rsCrearCourseAccountAssociation.getLong(1);
 
     DbUtils.close(psfCrearCourseAccountAssociation);
     DbUtils.close(rsCrearCourseAccountAssociation);
 
-    rsCrearCourseAccountAssociation.next();
-
-    return rsCrearCourseAccountAssociation.getLong(1);
+    return id;
   }
 
   @Override

@@ -85,7 +85,7 @@ public class StudentsEnrollmentService {
       if (optionalCourse.isPresent()) {
         Course course = optionalCourse.get();
 
-        List<MigParaleloEstudiante> estudiantes = migParaleloEstudianteDao.getUsersFromIDMateria(Integer.parseInt(course.getMigration_id()));
+        List<MigParaleloEstudiante> estudiantes = migParaleloEstudianteDao.getUsersFromIDMateria(Integer.parseInt(course.getMigration_id() != null ? course.getMigration_id() : "-1"));
         for(MigParaleloEstudiante estudiante: estudiantes) {
           txCrearEnrollmentEstudiante(estudiante, course, courseSection);
         }
