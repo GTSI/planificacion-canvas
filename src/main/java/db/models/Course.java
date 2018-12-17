@@ -215,7 +215,8 @@ public class Course {
                 long root_account_id, long enrollment_term_id,
                 String tab_configuration,
                 String sis_teacher_id,
-                Timestamp start_at, Timestamp conclude_at,
+                Timestamp start_at,
+                Timestamp conclude_at,
                 String migration_id) {
     this.id = id;
     this.name = name;

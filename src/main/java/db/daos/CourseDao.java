@@ -89,11 +89,9 @@ public class CourseDao extends AbstractDao implements Dao<Course>{
     psfCrearCourse.setLong(11, course.getRoot_account_id());
     psfCrearCourse.setLong(12, course.getEnrollment_term_id());
     psfCrearCourse.setString(13, course.getTab_configuration());
-    psfCrearCourse.setNull(14, Types.VARCHAR); // sis_teacher_id Otra funcion se encargara de esto.
-//    psfCrearCourse.setTimestamp(15, Objects.requireNonNull(course.getStart_at()));
-//    psfCrearCourse.setTimestamp(16, Objects.requireNonNull(course.getConclude_at()));
-    psfCrearCourse.setNull(15, Types.TIMESTAMP);
-    psfCrearCourse.setNull(16, Types.TIMESTAMP);
+    psfCrearCourse.setNull(14, Types.VARCHAR); // sis_teacher_id otra funcion se encargara de esto.
+    psfCrearCourse.setTimestamp(15, Objects.requireNonNull(course.getStart_at()));
+    psfCrearCourse.setTimestamp(16, Objects.requireNonNull(course.getConclude_at()));
     psfCrearCourse.setString(17, Objects.requireNonNull(course.getMigration_id()));
 
     psfCrearCourse.executeUpdate();

@@ -43,11 +43,9 @@ public class CourseSectionsDao extends AbstractDao implements Dao<CourseSection>
     psfCrearCourseSection.setLong(3, courseSection.getEnrollment_term_id());
     psfCrearCourseSection.setString(4, courseSection.getName());
     psfCrearCourseSection.setBoolean(5, courseSection.isDefault_section());
-//    psfCrearCourseSection.setTimestamp(6, courseSection.getStart_at());
-//    psfCrearCourseSection.setTimestamp(7, courseSection.getEnd_at());
+    psfCrearCourseSection.setTimestamp(6, courseSection.getStart_at());
+    psfCrearCourseSection.setTimestamp(7, courseSection.getEnd_at());
 
-    psfCrearCourseSection.setNull(6, Types.TIMESTAMP);
-    psfCrearCourseSection.setNull(7, Types.TIMESTAMP);
     psfCrearCourseSection.setString(8, "active");
 
     psfCrearCourseSection.executeUpdate();

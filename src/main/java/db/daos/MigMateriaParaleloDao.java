@@ -60,7 +60,7 @@ public class MigMateriaParaleloDao extends AbstractDao implements Dao<MigMateria
 
   /* Obtenemos informacion de los paralelos planificados para este termino*/
   public List<MigParaleloProfesorData> getCourseAndTeachersFromMigs() throws SQLException {
-    String sql = "SELECT distinct pp.idmateria, pp.paralelo,  pp.cedula, mp.nombre, mp.materia FROM mig_paralelo_profesor pp " +
+    String sql = "SELECT distinct pp.idmateria, pp.paralelo,  pp.cedula, mp.nombre, mp.materia, mp.start_at, mp.end_at FROM mig_paralelo_profesor pp " +
       "INNER JOIN mig_materia_paralelo mp ON  upper(pp.materia)=upper(mp.materia) ORDER BY mp.nombre";
 
     Statement stmtGetParalelosPlanificados = this.getConn().createStatement();
@@ -73,7 +73,9 @@ public class MigMateriaParaleloDao extends AbstractDao implements Dao<MigMateria
         rsGetParalelosPlanificados.getInt("paralelo"),
         Objects.requireNonNull(rsGetParalelosPlanificados.getString("cedula")),
         Objects.requireNonNull(rsGetParalelosPlanificados.getString("nombre")),
-        Objects.requireNonNull(rsGetParalelosPlanificados.getString("materia"))));
+        Objects.requireNonNull(rsGetParalelosPlanificados.getString("materia")),
+        Objects.requireNonNull(rsGetParalelosPlanificados.getTimestamp("start_at")),
+        Objects.requireNonNull(rsGetParalelosPlanificados.getTimestamp("end_at"))));
     }
 
     return paralelosPlanificados;

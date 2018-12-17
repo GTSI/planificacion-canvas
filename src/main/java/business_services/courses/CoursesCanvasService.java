@@ -10,6 +10,7 @@ package business_services.courses;
   import db.models.CourseSection;
   import db.models.Wiki;
   import helpers.CanvasConstants;
+  import helpers.DateUtils;
 
   import java.sql.Connection;
   import java.sql.SQLException;
@@ -155,14 +156,16 @@ public class CoursesCanvasService {
   private void txCrearCursoMaestria(@NotNull MigParaleloProfesorData paralelo) {
     Connection conn = userDao.getConn();
 
-    // DELETE THIS
-    Date date = new Date();
-    long time = date.getTime();
-
-    Timestamp timeSQL = new Timestamp(time);
-
     try {
       conn.setAutoCommit(false);
+
+      DateUtils.modifyTimestamp(
+        paralelo.start_at,
+        DateUtils.TypeOperation.SUBSTRACT, 14);
+
+      DateUtils.modifyTimestamp(
+        paralelo.end_at,
+        DateUtils.TypeOperation.ADD, 20);
 
       Wiki wikiCreada = wikisDao.saveAndRetrieveIntance(new Wiki(
         -1,
@@ -188,8 +191,8 @@ public class CoursesCanvasService {
       "- id: 10\n- id: 3\n- id: 5\n- id: 4\n- id: 14\n- id: 8\n" +
       "- id: 18\n- id: 6\n- id: 2\n- id: 16\n- id: 11\n  hidden: true\n",
       null,
-        timeSQL,
-        timeSQL,
+        paralelo.start_at,
+        paralelo.end_at,
         Integer.toString(paralelo.idmateria)
       ));
 
@@ -200,8 +203,8 @@ public class CoursesCanvasService {
         terminoDestino,
         "Paralelo " + paralelo.paralelo,
         true,
-        null,
-        null
+        paralelo.start_at,
+        paralelo.end_at
       ));
 
       courseAccountAssociationDao.save(new CourseAccountAssociation(

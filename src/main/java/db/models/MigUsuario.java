@@ -30,7 +30,7 @@ public class MigUsuario {
     }
 
     if(this.id != null) {
-      this.id = this.id.trim().replaceAll("\"", "").toLowerCase();
+      this.id = this.id.trim().replaceAll("\"", "").toUpperCase();
     }
 
     if(this.username != null) {
