@@ -131,8 +131,8 @@ public class StudentsEnrollmentService {
             enrollment_id,
             "active",
             true,
-            null,
-            null,
+            course.getStart_at(),
+            course.getConclude_at(),
             false,
             true,
             1));
