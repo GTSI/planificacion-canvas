@@ -99,6 +99,38 @@ public class EnrollmentsDao extends AbstractDao implements Dao<Enrollment> {
     }
   }
 
+  public boolean existeEnrollment(String correo, String unique_id, String cedula, long role_id, long course_section_id) throws SQLException {
+    String sql = "";
+    if(correo != null && unique_id == null) {
+      sql = "SELECT * FROM enrollments e" + " JOIN pseudonyms p ON e.user_id=p.user_id" +
+        " WHERE p.workflow_state<>'deleted' and e.workflow_state<>'deleted' and (p.sis_user_id='"
+        + cedula + "' " +
+        "or p.unique_id='" + correo + "' " +
+        "or p.unique_id=concat('" + unique_id + "','@espol.edu.ec'))" +
+        " and e.role_id=" + role_id + " and e.course_section_id=" + course_section_id;
+    } else if(unique_id != null && correo != null) {
+      sql = "SELECT * FROM enrollments e" + " JOIN pseudonyms p ON e.user_id=p.user_id" +
+        " WHERE p.workflow_state<>'deleted' and e.workflow_state<>'deleted' and (p.sis_user_id='"
+        + cedula + "' or p.unique_id='" + unique_id + "' " +
+        "or p.unique_id='" + correo + "' " +
+        "or p.unique_id=concat('" + unique_id + "','@espol.edu.ec'))" +
+        " and e.role_id=" + role_id + " and e.course_section_id=" + course_section_id;
+    } else if(unique_id != null ) {
+        sql = "SELECT * FROM enrollments e" + " JOIN pseudonyms p ON e.user_id=p.user_id" +
+          " WHERE p.workflow_state<>'deleted' and e.workflow_state<>'deleted' and (p.sis_user_id='"
+          + cedula + "' or p.unique_id='"+unique_id+"' " +
+          "or p.unique_id=concat('"+unique_id+"','@espol.edu.ec'))" +
+          " and e.role_id=" + role_id + " and e.course_section_id=" + course_section_id;
+      } else {
+      return existeEnrollment(cedula, role_id, course_section_id);
+    }
+
+      Statement stmtExistEnrollment = getConn().createStatement();
+      ResultSet rsExistsEnrollment = stmtExistEnrollment.executeQuery(sql);
+
+      return rsExistsEnrollment.next();
+  }
+
   public boolean existeEnrollment(String cedula, long role_id, long course_section_id) throws SQLException {
     String sql = "SELECT * FROM enrollments e" + " JOIN pseudonyms p ON e.user_id=p.user_id" +
       " WHERE p.workflow_state<>'deleted' and e.workflow_state<>'deleted' and (p.sis_user_id='"

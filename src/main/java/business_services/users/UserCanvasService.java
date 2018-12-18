@@ -138,4 +138,15 @@ public class UserCanvasService {
         createOrUpdateUserDB(migUser);
       }
   }
+
+  public void migrarUsuario(String id) {
+    try {
+      MigUsuario usuario = migUsuariosDao.getFromMatricula(id);
+      createOrUpdateUserDB(usuario);
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+
+  }
+
 }

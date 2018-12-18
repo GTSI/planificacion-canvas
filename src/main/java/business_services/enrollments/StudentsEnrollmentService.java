@@ -8,6 +8,7 @@ package business_services.enrollments;
   import java.sql.Connection;
   import java.sql.SQLException;
   import java.util.List;
+  import java.util.NoSuchElementException;
   import java.util.Objects;
   import java.util.Optional;
 
@@ -104,9 +105,9 @@ public class StudentsEnrollmentService {
       Roles roleEstudiante = rolesDao.getFromName("StudentEnrollment");
       MigUsuario migUsuarioEstudiante = migUsuariosDao.getFromMatricula(estudiante.getMatricula());
 
-      if(migUsuarioEstudiante != null   && !enrollmentsDao.existeEnrollment(migUsuarioEstudiante.getUsername(), estudiante.getMatricula(), roleEstudiante.getId(), courseSection.getId() ) ) {
+      if(migUsuarioEstudiante != null   && !enrollmentsDao.existeEnrollment(migUsuarioEstudiante.getEmail(), migUsuarioEstudiante.getUsername(), estudiante.getMatricula(), roleEstudiante.getId(), courseSection.getId() ) ) {
         System.out.println("Creando enrollment" + estudiante);
-        Pseudonym pseudonymEstudiante = pseudonymsDao.getPseudonymFromSisUserId(estudiante.getMatricula());
+        Pseudonym pseudonymEstudiante = pseudonymsDao.getFromMigUsuario(migUsuarioEstudiante);
 
         if(pseudonymEstudiante != null || (migUsuarioEstudiante.getUsername()!= null
           && pseudonymsDao.getFromUniqueId(migUsuarioEstudiante.getUsername()).isPresent())) {
@@ -160,6 +161,26 @@ public class StudentsEnrollmentService {
   /*eliminacion de los enrollments dentro de un termino seleccionado*/
   public void txEliminarEnrollmentsInexistentes() {
 
+  }
+
+  public void enrollUnicoUsuarioPorMatricula(String matricula) {
+    try {
+      List<MigParaleloEstudiante> estudiantes = migParaleloEstudianteDao.getMigParaleloEstudiantesFromMatricula(matricula);
+      for(MigParaleloEstudiante estudiante: estudiantes) {
+        try {
+          Course course = courseDao.getFromMigrationId(Long.toString(estudiante.getIdmateria())).get();
+          CourseSection courseSection = courseSectionsDao.getFromCourseId(course.getId()).get();
+          txCrearEnrollmentEstudiante(
+            estudiante,
+            course,
+            courseSection);
+        } catch(NoSuchElementException ex) {
+            System.err.println("Curso no existente para migparaleloestudiante... " + estudiante);
+        }
+      }
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
   }
 
 }

@@ -115,4 +115,30 @@ public class CourseSectionsDao extends AbstractDao implements Dao<CourseSection>
 
     return course_sections;
   }
+
+  public Optional<CourseSection> getFromCourseId(long course_id) throws SQLException {
+    String sql = "SELECT * FROM course_sections WHERE course_id=? and workflow_state<>'deleted'";
+    ResultSet rsGetCourseSection = null;
+    PreparedStatement psfGetUser = this.getConn().prepareStatement(sql);
+    psfGetUser.setLong(1, course_id);
+
+    rsGetCourseSection = psfGetUser.executeQuery();
+
+    if (rsGetCourseSection.next())
+      return Optional.of(new CourseSection(
+        rsGetCourseSection.getLong("id"),
+        rsGetCourseSection.getLong("course_id"),
+        rsGetCourseSection.getLong("root_account_id"),
+        rsGetCourseSection.getLong("enrollment_term_id"),
+        rsGetCourseSection.getString("name"),
+        rsGetCourseSection.getBoolean("default_section"),
+        rsGetCourseSection.getTimestamp("start_at"),
+        rsGetCourseSection.getTimestamp("end_at")
+      ));
+
+    DbUtils.close(psfGetUser);
+    DbUtils.close(rsGetCourseSection);
+
+    return Optional.empty();
+  }
 }

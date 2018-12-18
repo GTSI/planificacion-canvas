@@ -86,4 +86,23 @@ public class MigParaleloEstudianteDao extends AbstractDao implements Dao<MigPara
 
     return usuarios;
   }
+
+  public List<MigParaleloEstudiante> getMigParaleloEstudiantesFromMatricula(String matricula) throws SQLException {
+    Statement stmtGetMigParaleloProfesores = this.getConn().createStatement();
+    ResultSet rsGetMigParaleloProfesores = stmtGetMigParaleloProfesores.executeQuery(
+      "SELECT distinct * FROM mig_paralelo_estudiante  " +
+        "where id is not null  " +
+        "and matricula is not null and matricula='"+matricula + "' order by id ");
+
+    ArrayList<MigParaleloEstudiante> usuarios = new ArrayList<>();
+
+    while (rsGetMigParaleloProfesores.next()) {
+      usuarios.add(new MigParaleloEstudiante(
+        rsGetMigParaleloProfesores.getInt("idmateria"),
+        rsGetMigParaleloProfesores.getString("matricula")
+      ));
+    }
+
+    return usuarios;
+  }
 }

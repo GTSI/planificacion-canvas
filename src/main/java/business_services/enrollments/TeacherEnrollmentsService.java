@@ -104,7 +104,12 @@ public class TeacherEnrollmentsService {
       Roles roleTeacher = rolesDao.getFromName("TeacherEnrollment");
       MigUsuario migUsuarioProfesor = migUsuariosDao.getFromMatricula(profesor.getCedula());
 
-      if(migUsuarioProfesor != null   && !enrollmentsDao.existeEnrollment(migUsuarioProfesor.getUsername(), profesor.getCedula(), roleTeacher.getId(), courseSection.getId() ) ) {
+      if(migUsuarioProfesor != null   && !enrollmentsDao.existeEnrollment(
+        migUsuarioProfesor.getEmail(),
+        migUsuarioProfesor.getUsername(),
+        profesor.getCedula(),
+        roleTeacher.getId(),
+        courseSection.getId() ) ) {
         System.out.println("Creando enrollment" + profesor);
         Pseudonym pseudonymProfesor = pseudonymsDao.getPseudonymFromSisUserId(profesor.getCedula());
 

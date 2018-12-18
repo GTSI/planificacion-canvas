@@ -2,6 +2,7 @@ package db.daos;
 
 import business_services.users.data.PasswordData;
 import com.sun.istack.internal.NotNull;
+import db.models.MigParaleloEstudiante;
 import db.models.MigUsuario;
 import db.models.Pseudonym;
 import db.models.User;
@@ -179,6 +180,32 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
         rsGetPseudonym.getLong("communication_channel_id")
       );
     }
+    return null;
+  }
+
+  public Pseudonym getFromMigUsuario(MigUsuario estudiante) throws SQLException {
+    Pseudonym pseudonym = null;
+    String usuario = estudiante.getUsername();
+    String correo = estudiante.getEmail();
+    String matricula = estudiante.getId();
+    Optional<Pseudonym> optionalPseudonym;
+
+    if(usuario != null) {
+      optionalPseudonym = this.getFromUniqueId(usuario);
+      if(optionalPseudonym.isPresent())  return optionalPseudonym.get();
+
+    }
+
+    if(correo != null) {
+      optionalPseudonym = this.getFromUniqueId(correo);
+      if(optionalPseudonym.isPresent())  return optionalPseudonym.get();
+    }
+
+    if(matricula != null) {
+      Pseudonym ps= this.getPseudonymFromSisUserId(matricula);
+      if(ps != null)  return ps;
+    }
+
     return null;
   }
 }
