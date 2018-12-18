@@ -15,20 +15,19 @@ public class Planificacion {
     DBConnection configDB = DBConnection.getInstance("development");
     PlanificacionConfig planificacionConfig = PlanificacionConfig.getInstance("development");
 
-    UserCanvasService service = UserCanvasService.getInstance(configDB.getConnectionDestino());
-    assert service != null;
-    // service.migrarUsuarios(); // Creacion de Usuarios dentro del sistema canvas, tomando su informacion desde la tabla mig_usuarios
-
+    UserCanvasService userService = UserCanvasService.getInstance(configDB.getConnectionDestino());
+    assert userService != null;
+    userService.migrarUsuarios(); // Creacion de Usuarios dentro del sistema canvas, tomando su informacion desde la tabla mig_usuarios
 
     // una vez migrados los usuarios realizamos la creacion de los cursos
     CoursesCanvasService coursesCanvasService = CoursesCanvasService.getInstance(configDB.getConnectionDestino(), planificacionConfig);
     assert coursesCanvasService != null;
 
-    // coursesCanvasService.planificarCursos(CanvasConstants.TIPO_PLANIFICACION.MAESTRIAS);
+    coursesCanvasService.planificarCursos(CanvasConstants.TIPO_PLANIFICACION.MAESTRIAS);
 
     TeacherEnrollmentsService teacherCanvasService = TeacherEnrollmentsService.getInstance(
       configDB.getConnectionDestino(), planificacionConfig);
-    // teacherCanvasService.crearEnrollments();
+    teacherCanvasService.crearEnrollments();
 
     StudentsEnrollmentService studentsEnrollmentService = StudentsEnrollmentService.getInstance(
       configDB.getConnectionDestino(), planificacionConfig);
