@@ -13,4 +13,10 @@ public class UsersHelper {
     return new User(0, name, sortable_name, name, null, workflow_state, -1);
   }
 
+  public static boolean shouldUpdateNameOrSortableName(User user, String name) {
+    int MIN_LENGTH = 10;
+    if(name.charAt(0) == ',') return true;
+    return (name.length() <=MIN_LENGTH);
+  }
+
 }

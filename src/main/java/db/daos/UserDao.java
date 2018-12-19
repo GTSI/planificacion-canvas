@@ -86,6 +86,25 @@ public class UserDao extends AbstractDao implements Dao<User> {
 
   @Override
   public void update(User user, String[] params) {
+    PreparedStatement psfUpdateUsuario = null;
+    try {
+      psfUpdateUsuario = this.getConn().prepareStatement("update users "
+        + " set name=?, sortable_name=?, short_name=? where id=?");
+
+      psfUpdateUsuario.setString(1, user.name); // name
+      psfUpdateUsuario.setString(2, user.sortable_name); // sortable_name
+      psfUpdateUsuario.setString(3, user.short_name); // short_name
+      psfUpdateUsuario.setLong(4, user.id); // id
+
+      psfUpdateUsuario.executeUpdate();
+
+
+      DbUtils.close(psfUpdateUsuario);
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+
+    }
   }
 
   @Override

@@ -2,12 +2,16 @@ package business_services.users;
 
 import db.daos.*;
 import db.models.MigUsuario;
+import db.models.Pseudonym;
 import db.models.User;
+import helpers.EmailHelper;
+import helpers.PseudonymsHelper;
 import helpers.UsersHelper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class UserCanvasService {
   private UserDao userDao;
@@ -24,7 +28,7 @@ public class UserCanvasService {
                             CommunicationChannelDao communicationChannelDao,
                             UserAccountAssociationDao userAccountAssociationDao,
                             MigUsuariosDao migUsuariosDao
-                            ) throws SQLException {
+                            ) {
     this.userDao = userDao;
     this.pseudonymsDao = pseudonymsDao;
     this.communicationChannelDao = communicationChannelDao;
@@ -54,11 +58,11 @@ public class UserCanvasService {
 
       if (pseudonymsDao.userExistsByUniqueId(migUser.getUsername() != null ? migUser.getUsername() : migUser.getEmail(), migUser.getId())) {
         System.out.println("Actualizando usuario: " + migUser);
-        txUpdateUser(migUser);
+        Pseudonym pseudonym = pseudonymsDao.getFromMigUsuario(migUser);
+        System.out.println(pseudonym);
 
         /* Si el usuario no existe realizamos la creacion de este. */
       } else {
-
         System.out.println("Creando usuario: " + migUser);
         txCrearUsuarioCompleto(migUser);
       }
@@ -149,4 +153,69 @@ public class UserCanvasService {
 
   }
 
+  public void actualizarUsuariosFromMigUsuarios() throws SQLException {
+      List<MigUsuario> migUsuarios = migUsuariosDao.getAll();
+
+      for(MigUsuario migUsuario: migUsuarios) {
+        txActualizarUsuarioFromMigUsuario(migUsuario);
+      }
+  }
+  public void txActualizarUsuarioFromMigUsuario(MigUsuario migUsuario) {
+    Connection conn = pseudonymsDao.getConn();
+    try {
+      conn.setAutoCommit(false);
+      if(migUsuario.getUsername() != null) {
+        List<Pseudonym> pseudonyms = pseudonymsDao.getAllPseudonymsFromMigUsuario(migUsuario);
+
+        if(!pseudonyms.isEmpty()) {
+          Optional<User> optionalUser = userDao.get(pseudonyms.get(0).user_id);
+          if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if(UsersHelper.shouldUpdateNameOrSortableName(user, user.name)) {
+              String name = migUsuario.getNombres() + " " + migUsuario.getApellidos();
+              String sortable_name = migUsuario.getApellidos() + ", " + migUsuario.getNombres();
+              user.name = name;
+              user.sortable_name = sortable_name;
+              user.short_name = name;
+
+              userDao.update(user, null);
+            } else {
+              System.err.println("No se puede actualizar user al  usuario " + user);
+            }
+
+            if(!PseudonymsHelper.hasUsernameAsUniqueId(pseudonyms, migUsuario.getUsername())) {
+              // username del migUsuario ha cambiado, entonces debemos crear un nuevo pseudonimo
+              System.out.println("Agregando pseudonym a migUser" + migUsuario);
+              if(pseudonyms.size() == 1) {
+                Pseudonym pseudonym = pseudonyms.get(0);
+                pseudonym.unique_id = migUsuario.getUsername();
+
+                pseudonymsDao.update(pseudonym, null);
+
+                long idComm = communicationChannelDao.saveFromUserData(user, migUsuario);
+                if(idComm == -1) System.err.println("No se pudo crear el communication channel nuevo");
+              } else {
+                pseudonymsDao.saveFromUserData(user, migUsuario);
+              }
+            } else {
+              System.err.println("No se puede agregar pseudonym al usuario " + user);
+            }
+          }
+        }
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+      try {
+        System.err.println("actualizacion del migUsuario " + migUsuario + " no se pudo realizar!");
+        conn.rollback();
+      } catch (SQLException excep) { }
+    } finally {
+      try {
+        conn.setAutoCommit(true);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+  }
 }

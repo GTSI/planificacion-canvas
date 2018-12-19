@@ -3,6 +3,8 @@ package db.models;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
+import java.util.Objects;
+
 public class Pseudonym {
 
   @Nullable
@@ -49,5 +51,33 @@ public class Pseudonym {
     this.login_count = login_count;
     this.sis_user_id = sis_user_id;
     this.communication_channel_id = communication_channel_id;
+  }
+
+  @Override
+  public String toString() {
+    return "Pseudonym " +
+      "id=" + id +
+      ", user_id=" + user_id +
+      ", account_id=" + account_id +
+      ", unique_id='" + unique_id + '\'' +
+      ", crypted_password='" + crypted_password + '\'' +
+      ", password_salt='" + password_salt + '\'' +
+      ", login_count=" + login_count +
+      ", sis_user_id='" + sis_user_id + '\'' +
+      ", communication_channel_id=" + communication_channel_id ;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Pseudonym pseudonym = (Pseudonym) o;
+    return user_id == pseudonym.user_id &&
+      Objects.equals(unique_id, pseudonym.unique_id);
+  }
+
+  @Override
+  public int hashCode() {
+    return unique_id.hashCode();
   }
 }

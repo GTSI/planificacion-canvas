@@ -28,7 +28,9 @@ public class MigUsuariosDao extends AbstractDao implements Dao<MigUsuario> {
          "where id is not null  " +
          "and email is not null and email like '%@%' " +
          "and apellidos is not null " +
-         "and nombres is not null order by id;");
+         "and nombres is not null " +
+         // "and  id='1205596826'" +
+         "order by id;");
 
     ArrayList<MigUsuario> usuarios = new ArrayList<>();
 

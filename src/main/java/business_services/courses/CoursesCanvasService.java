@@ -14,8 +14,6 @@ package business_services.courses;
 
   import java.sql.Connection;
   import java.sql.SQLException;
-  import java.sql.Timestamp;
-  import java.util.Date;
   import java.util.List;
 
 public class CoursesCanvasService {
@@ -86,7 +84,7 @@ public class CoursesCanvasService {
   public @NotNull List<MigParaleloProfesorData> obtenerParalelosPlanificadosMaestrias() {
     try {
       assert migMateriaParaleloDao != null;
-      return migMateriaParaleloDao.getCourseAndTeachersFromMigs();
+      return migMateriaParaleloDao.getCourseAndTeachersFromMigsMaetrias();
     } catch (SQLException e) {
       e.printStackTrace();
       System.err.println("No se pudo consultar los usuarios y paralelos planificados para este termino.");

@@ -11,6 +11,8 @@ import helpers.PasswordGenerator;
 import org.apache.commons.dbutils.DbUtils;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +21,58 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
   public PseudonymsDao(Connection conn) {
     super(conn);
   }
+
+  public List<Pseudonym> getAllPseudonymsFromSisUserId(String sis_user_id) throws SQLException {
+    ArrayList<Pseudonym> pseudonyms = new ArrayList<>();
+    Statement stmtGetPseudonym = getConn().createStatement();
+    ResultSet rsGetPseudonym = stmtGetPseudonym.executeQuery(
+      "SELECT * FROM pseudonyms WHERE workflow_state<>'deleted' and sis_user_id='"+sis_user_id+"'");
+
+    if(rsGetPseudonym.next()) {
+      pseudonyms.add(new Pseudonym(
+        rsGetPseudonym.getLong("id"),
+        rsGetPseudonym.getLong("user_id"),
+        rsGetPseudonym.getLong("account_id"),
+        rsGetPseudonym.getString("unique_id"),
+        rsGetPseudonym.getString("crypted_password"),
+        rsGetPseudonym.getString("password_salt"),
+        rsGetPseudonym.getLong("login_count"),
+        rsGetPseudonym.getString("sis_user_id"),
+        rsGetPseudonym.getLong("communication_channel_id")
+      ));
+    }
+
+    return pseudonyms;
+  }
+
+  public @NotNull List<Pseudonym> getAllPseudonymsFromUniqueId(String unique_id) throws SQLException {
+    ArrayList<Pseudonym> pseudonyms = new ArrayList<>();
+
+    String sql = "SELECT * FROM pseudonyms WHERE (unique_id=? or unique_id=concat(?, '@espol.edu.ec')) and workflow_state<>'deleted'";
+    ResultSet rsGetPseudonym = null;
+    PreparedStatement psfGetPseudonym = this.getConn().prepareStatement(sql);
+    psfGetPseudonym.setString(1, unique_id);
+    psfGetPseudonym.setString(2, unique_id);
+
+    rsGetPseudonym = psfGetPseudonym.executeQuery();
+
+    while (rsGetPseudonym.next())
+      pseudonyms.add(new Pseudonym(rsGetPseudonym.getLong("id"),
+        rsGetPseudonym.getLong("user_id"),
+        rsGetPseudonym.getLong("account_id"),
+        rsGetPseudonym.getString("unique_id"),
+        rsGetPseudonym.getString("crypted_password"),
+        rsGetPseudonym.getString("password_salt"),
+        rsGetPseudonym.getInt("login_count"),
+        rsGetPseudonym.getString("sis_user_id"),
+        rsGetPseudonym.getLong("communication_channel_id")));
+
+    DbUtils.close(psfGetPseudonym);
+    DbUtils.close(rsGetPseudonym);
+
+    return pseudonyms;
+  }
+
 
   public Optional<Pseudonym> getFromUniqueId(String unique_id) throws SQLException {
 
@@ -74,7 +128,21 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
 
   @Override
   public void update(Pseudonym pseudonym, String[] params) {
+    PreparedStatement psfUpdatePseudonym = null;
+    try {
+      psfUpdatePseudonym = this.getConn().prepareStatement("update pseudonyms "
+        + " set unique_id=? where id=?");
 
+      psfUpdatePseudonym.setString(1, pseudonym.unique_id); // name
+      psfUpdatePseudonym.setLong(2, pseudonym.id); // id
+
+      psfUpdatePseudonym.executeUpdate();
+
+      DbUtils.close(psfUpdatePseudonym);
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -208,4 +276,28 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
 
     return null;
   }
+
+  public List<Pseudonym> getAllPseudonymsFromMigUsuario(MigUsuario estudiante) throws SQLException {
+    HashSet<Pseudonym> pseudonyms = new HashSet<>();
+
+    String usuario = estudiante.getUsername();
+    String correo = estudiante.getEmail();
+    String matricula = estudiante.getId();
+
+    if(usuario != null) {
+      pseudonyms.addAll(this.getAllPseudonymsFromUniqueId(usuario));
+    }
+
+    if(correo != null) {
+      pseudonyms.addAll(this.getAllPseudonymsFromUniqueId(correo));
+    }
+
+    if(matricula != null) {
+
+      pseudonyms.addAll(this.getAllPseudonymsFromSisUserId(matricula));
+    }
+
+    return new ArrayList<>(pseudonyms);
+  }
+
 }
