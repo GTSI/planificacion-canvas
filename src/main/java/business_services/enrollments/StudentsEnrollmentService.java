@@ -25,6 +25,7 @@ public class StudentsEnrollmentService {
   private EnrollmentsDao enrollmentsDao;
   private PseudonymsDao pseudonymsDao;
   private EnrollmentStateDao enrollmentStateDao;
+  private UserDao userDao;
 
   private static StudentsEnrollmentService instance;
 
@@ -37,6 +38,7 @@ public class StudentsEnrollmentService {
     EnrollmentsDao enrollmentsDao,
     PseudonymsDao pseudonymsDao,
     EnrollmentStateDao enrollmentStateDao,
+    UserDao userDao,
     int terminoOrigen, int terminoDestino
   ) {
     this.terminoDestino = terminoDestino;
@@ -49,6 +51,7 @@ public class StudentsEnrollmentService {
     this.enrollmentsDao = enrollmentsDao;
     this.enrollmentStateDao = enrollmentStateDao;
     this.pseudonymsDao = pseudonymsDao;
+    this.userDao = userDao;
   }
 
   public static StudentsEnrollmentService getInstance(
@@ -64,6 +67,7 @@ public class StudentsEnrollmentService {
         new EnrollmentsDao(conn),
         new PseudonymsDao(conn),
         new EnrollmentStateDao(conn),
+        new UserDao(conn),
         planificacionConfig.getOrigen(), planificacionConfig.getDestino());
     }
 
@@ -159,8 +163,45 @@ public class StudentsEnrollmentService {
   }
 
   /*eliminacion de los enrollments dentro de un termino seleccionado*/
-  public void txEliminarEnrollmentsInexistentes() {
+  public void eliminarEnrollmentsInexistentes() throws SQLException {
+    List<CourseSection> courseSections = null;
 
+    courseSections = courseSectionsDao.getCourseSectionsFromEnrollmentTerm(terminoDestino);
+
+    for (CourseSection courseSection : courseSections) {
+      Optional<Course> optionalCourse = courseDao.get(courseSection.getCourse_id());
+      if (optionalCourse.isPresent()) {
+        Course course = optionalCourse.get();
+        if(course.getMigration_id() != null) {
+          List<Enrollment> studentEnrollments = enrollmentsDao.getAllEnrollmentsFromCourseSection(courseSection.getId(),
+            rolesDao.getFromName("StudentEnrollment").getId());
+
+          for(Enrollment e: studentEnrollments) {
+            Optional<User> optUser = userDao.get(e.getUser_id());
+            if(optUser.isPresent()) {
+              User user = optUser.get();
+              Pseudonym ps = pseudonymsDao.getPseudonymFromUser_Id(user.id);
+
+//              Optional<MigParaleloEstudiante> optionalMigParaleloEstudiante = migParaleloEstudianteDao.getSingleFromMatriculaOrUsername(
+//                ps.sis_user_id,
+//                ps.unique_id,
+//                Long.parseLong(course.getMigration_id()));
+
+              Optional <MigUsuario> optMigUser = migUsuariosDao.getFromNameAndLastName(user.name);
+              if(optMigUser.isPresent()) {
+                MigUsuario migUsuario = optMigUser.get();
+                boolean existsEnrollment = migParaleloEstudianteDao.existsEnrollment(
+                  migUsuario.getId(),
+                  course.getMigration_id());
+
+                if(!existsEnrollment) System.out.println("Hay que eliminar este enrollment...");
+              }
+
+            }
+          }
+        }
+      }
+    }
   }
 
   public void enrollUnicoUsuarioPorMatricula(String matricula) {

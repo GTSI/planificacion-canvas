@@ -4,6 +4,7 @@ import db.models.User;
 import org.apache.commons.dbutils.DbUtils;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,4 +118,30 @@ public class UserDao extends AbstractDao implements Dao<User> {
     return 0;
   }
 
+  public List<User> getAllFromNameAndLastNames(String nombres, String apellidos) throws SQLException {
+    ArrayList<User>  usuarios = new ArrayList<>();
+
+    String sql = "SELECT * FROM users u WHERE upper(name) like ? and upper(name) like ? and workflow_state<>'deleted' " +
+      "and exists (select id from pseudonyms where user_id=u.id and workflow_state<>'deleted')";
+    ResultSet rsGetUser = null;
+    PreparedStatement psfGetUser = this.getConn().prepareStatement(sql);
+    psfGetUser.setString(1, "%"+nombres+"%");
+    psfGetUser.setString(2, "%"+apellidos+"%");
+
+    rsGetUser = psfGetUser.executeQuery();
+
+    while (rsGetUser.next())
+      usuarios.add(new User(rsGetUser.getLong("id"),
+        rsGetUser.getString("name"),
+        rsGetUser.getString("sortable_name"),
+        rsGetUser.getString("short_name"),
+        rsGetUser.getString("uuid"),
+        rsGetUser.getString("workflow_state"),
+        rsGetUser.getLong("migration_id")));
+
+    DbUtils.close(psfGetUser);
+    DbUtils.close(rsGetUser);
+
+    return usuarios;
+  }
 }

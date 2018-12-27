@@ -4,7 +4,6 @@ import db.daos.*;
 import db.models.MigUsuario;
 import db.models.Pseudonym;
 import db.models.User;
-import helpers.EmailHelper;
 import helpers.PseudonymsHelper;
 import helpers.UsersHelper;
 
@@ -57,9 +56,9 @@ public class UserCanvasService {
     try {
 
       if (pseudonymsDao.userExistsByUniqueId(migUser.getUsername() != null ? migUser.getUsername() : migUser.getEmail(), migUser.getId())) {
-        System.out.println("Actualizando usuario: " + migUser);
+        // System.out.println("Actualizando usuario: " + migUser);
         Pseudonym pseudonym = pseudonymsDao.getFromMigUsuario(migUser);
-        System.out.println(pseudonym);
+        // System.out.println(pseudonym);
 
         /* Si el usuario no existe realizamos la creacion de este. */
       } else {
@@ -160,6 +159,7 @@ public class UserCanvasService {
         txActualizarUsuarioFromMigUsuario(migUsuario);
       }
   }
+
   public void txActualizarUsuarioFromMigUsuario(MigUsuario migUsuario) {
     Connection conn = pseudonymsDao.getConn();
     try {
@@ -171,7 +171,7 @@ public class UserCanvasService {
           Optional<User> optionalUser = userDao.get(pseudonyms.get(0).user_id);
           if(optionalUser.isPresent()) {
             User user = optionalUser.get();
-            if(UsersHelper.shouldUpdateNameOrSortableName(user, user.name)) {
+            if(UsersHelper.shouldUpdateNameOrSortableName(user, user.sortable_name)) {
               String name = migUsuario.getNombres() + " " + migUsuario.getApellidos();
               String sortable_name = migUsuario.getApellidos() + ", " + migUsuario.getNombres();
               user.name = name;
@@ -189,6 +189,7 @@ public class UserCanvasService {
               if(pseudonyms.size() == 1) {
                 Pseudonym pseudonym = pseudonyms.get(0);
                 pseudonym.unique_id = migUsuario.getUsername();
+                pseudonym.sis_user_id = pseudonym.sis_user_id.isEmpty()? migUsuario.getId(): pseudonym.sis_user_id;
 
                 pseudonymsDao.update(pseudonym, null);
 
@@ -200,6 +201,20 @@ public class UserCanvasService {
             } else {
               System.err.println("No se puede agregar pseudonym al usuario " + user);
             }
+          }
+        }
+      } else { // si aun no se actualiza el usuario
+        List<Pseudonym> pseudonyms = pseudonymsDao.getAllPseudonymsFromMigUsuario(migUsuario);
+
+        if(!pseudonyms.isEmpty()) {
+          Optional<User> optionalUser = userDao.get(pseudonyms.get(0).user_id);
+          if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            Pseudonym pseudonym = pseudonyms.get(0);
+            pseudonym.sis_user_id = pseudonym.sis_user_id.isEmpty()? migUsuario.getId(): pseudonym.sis_user_id;
+
+            pseudonymsDao.update(pseudonym, null);
           }
         }
       }
@@ -215,6 +230,33 @@ public class UserCanvasService {
         conn.setAutoCommit(true);
       } catch (SQLException e) {
         e.printStackTrace();
+      }
+    }
+  }
+
+  public void printDuplicatesFromMigUsuarios() throws SQLException {
+    List<MigUsuario> migUsuarios = migUsuariosDao.getAll();
+
+    for(MigUsuario migUsuario: migUsuarios) {
+      txPrintPossibleDuplicates(migUsuario);
+    }
+  }
+
+  public void txPrintPossibleDuplicates(MigUsuario migUsuario) {
+    Connection conn = pseudonymsDao.getConn();
+    if (migUsuario.getUsername() != null) {
+      List<User> usuarios = null;
+      try {
+        usuarios = userDao.getAllFromNameAndLastNames(migUsuario.getNombres(), migUsuario.getApellidos());
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+
+      if (usuarios.size() > 1) {
+        System.out.println(migUsuario);
+        for (User u : usuarios) {
+          System.out.println(u);
+        }
       }
     }
   }

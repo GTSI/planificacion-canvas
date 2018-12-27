@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,4 +104,35 @@ public class MigParaleloEstudianteDao extends AbstractDao implements Dao<MigPara
 
     return usuarios;
   }
+
+  public boolean existsEnrollment(String id, String migration_id) throws SQLException {
+    Statement stmtGetMigParaleloProfesores = this.getConn().createStatement();
+    ResultSet rsGetMigParaleloProfesores = stmtGetMigParaleloProfesores.executeQuery(
+      "SELECT distinct * FROM mig_paralelo_estudiante  " +
+        "where id is not null  " +
+        "and matricula is not null and matricula='"+id + "' and idmateria='"+migration_id+"' order by id ");
+
+    if (rsGetMigParaleloProfesores.next()) {
+      return true;
+    }
+
+    return false;
+  }
+
+//  public Optional<MigParaleloEstudiante> getSingleFromMatriculaOrUsername(String sis_user_id, String unique_id, long idMateria) throws SQLException {
+//    Statement stmtGetMigParaleloProfesores = this.getConn().createStatement();
+//    ResultSet rsGetMigParaleloProfesores = stmtGetMigParaleloProfesores.executeQuery(
+//      "SELECT distinct * FROM mig_paralelo_estudiante  " +
+//        "where id is not null  " +
+//        "and matricula is not null and idmateria=? and (matricula=? or matricula=?) order by id ");
+//
+//    while (rsGetMigParaleloProfesores.next()) {
+//      usuarios.add(new MigParaleloEstudiante(
+//        rsGetMigParaleloProfesores.getInt("idmateria"),
+//        rsGetMigParaleloProfesores.getString("matricula")
+//      ));
+//    }
+//
+//    return Optional.empty();
+//  }
 }

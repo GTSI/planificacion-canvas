@@ -131,10 +131,11 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
     PreparedStatement psfUpdatePseudonym = null;
     try {
       psfUpdatePseudonym = this.getConn().prepareStatement("update pseudonyms "
-        + " set unique_id=? where id=?");
+        + " set unique_id=?, sis_user_id=? where id=?");
 
       psfUpdatePseudonym.setString(1, pseudonym.unique_id); // name
-      psfUpdatePseudonym.setLong(2, pseudonym.id); // id
+      psfUpdatePseudonym.setString(2, pseudonym.sis_user_id); // sis_user_id
+      psfUpdatePseudonym.setLong(3, pseudonym.id); // id
 
       psfUpdatePseudonym.executeUpdate();
 
@@ -297,7 +298,60 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
       pseudonyms.addAll(this.getAllPseudonymsFromSisUserId(matricula));
     }
 
+    if(pseudonyms.isEmpty()) {
+      pseudonyms.addAll(this.getAllPseudonymsFromNamesAndLastNames(estudiante.getNombres(), estudiante.getApellidos()));
+    }
+
     return new ArrayList<>(pseudonyms);
+  }
+
+  public Pseudonym getPseudonymFromUser_Id(long user_id) throws SQLException {
+    Statement stmtGetPseudonym = getConn().createStatement();
+    ResultSet rsGetPseudonym = stmtGetPseudonym.executeQuery(
+      "SELECT * FROM pseudonyms WHERE workflow_state<>'deleted' and user_id="+user_id);
+
+    if(rsGetPseudonym.next()) {
+      return new Pseudonym(
+        rsGetPseudonym.getLong("id"),
+        rsGetPseudonym.getLong("user_id"),
+        rsGetPseudonym.getLong("account_id"),
+        rsGetPseudonym.getString("unique_id"),
+        rsGetPseudonym.getString("crypted_password"),
+        rsGetPseudonym.getString("password_salt"),
+        rsGetPseudonym.getLong("login_count"),
+        rsGetPseudonym.getString("sis_user_id"),
+        rsGetPseudonym.getLong("communication_channel_id")
+      );
+    }
+    return null;
+  }
+
+  public @NotNull List<Pseudonym> getAllPseudonymsFromNamesAndLastNames(String nombres, String apellidos) throws SQLException {
+    ArrayList<Pseudonym> pseudonyms = new ArrayList<>();
+
+    String sql = "SELECT * FROM pseudonyms WHERE workflow_state<>'deleted' and user_id in (select id from users " +
+      "where upper(name)=?)";
+    ResultSet rsGetPseudonym = null;
+    PreparedStatement psfGetPseudonym = this.getConn().prepareStatement(sql);
+    psfGetPseudonym.setString(1, nombres + " " + apellidos);
+
+    rsGetPseudonym = psfGetPseudonym.executeQuery();
+
+    while (rsGetPseudonym.next())
+      pseudonyms.add(new Pseudonym(rsGetPseudonym.getLong("id"),
+        rsGetPseudonym.getLong("user_id"),
+        rsGetPseudonym.getLong("account_id"),
+        rsGetPseudonym.getString("unique_id"),
+        rsGetPseudonym.getString("crypted_password"),
+        rsGetPseudonym.getString("password_salt"),
+        rsGetPseudonym.getInt("login_count"),
+        rsGetPseudonym.getString("sis_user_id"),
+        rsGetPseudonym.getLong("communication_channel_id")));
+
+    DbUtils.close(psfGetPseudonym);
+    DbUtils.close(rsGetPseudonym);
+
+    return pseudonyms;
   }
 
 }

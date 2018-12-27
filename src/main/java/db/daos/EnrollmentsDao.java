@@ -1,9 +1,11 @@
 package db.daos;
 
 import db.models.Enrollment;
+import helpers.CanvasConstants;
 import org.apache.commons.dbutils.DbUtils;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -143,5 +145,33 @@ public class EnrollmentsDao extends AbstractDao implements Dao<Enrollment> {
     return rsExistsEnrollment.next();
   }
 
+  public List<Enrollment> getAllEnrollmentsFromCourseSection(long course_section_id, long role_id) throws SQLException {
+    ArrayList<Enrollment> enrollments = new ArrayList<>();
+    String sql = "SELECT e.* FROM enrollments e" + " JOIN pseudonyms p ON e.user_id=p.user_id" +
+      " WHERE p.workflow_state<>'deleted' and e.workflow_state<>'deleted' " +
+      " and e.role_id=" + role_id + " and e.course_section_id=" + course_section_id;
+
+    Statement stmtExistEnrollment = getConn().createStatement();
+    ResultSet rsExistsEnrollment = stmtExistEnrollment.executeQuery(sql);
+
+    while (rsExistsEnrollment.next()) {
+      enrollments.add(new Enrollment(
+            rsExistsEnrollment.getLong("id"),
+            rsExistsEnrollment.getLong("user_id"),
+            rsExistsEnrollment.getLong("course_id"),
+            rsExistsEnrollment.getString("type"),
+            rsExistsEnrollment.getString("uuid"),// uuid nunca se toca.
+            rsExistsEnrollment.getString("workflow_state"),
+            rsExistsEnrollment.getLong("course_section_id"),
+            rsExistsEnrollment.getLong("root_account_id"),
+            rsExistsEnrollment.getString("grade_publishing_status"),
+            rsExistsEnrollment.getBoolean("limit_privileges_to_course_section"),
+            rsExistsEnrollment.getLong("role_id"),
+        rsExistsEnrollment.getBoolean("from_script")
+      ));
+    }
+
+    return enrollments;
+  }
 }
 

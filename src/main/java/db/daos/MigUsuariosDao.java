@@ -29,7 +29,7 @@ public class MigUsuariosDao extends AbstractDao implements Dao<MigUsuario> {
          "and email is not null and email like '%@%' " +
          "and apellidos is not null " +
          "and nombres is not null " +
-         // "and  id='1205596826'" +
+         "and  id='0925789562asdsad'" +
          "order by id;");
 
     ArrayList<MigUsuario> usuarios = new ArrayList<>();
@@ -108,4 +108,34 @@ public class MigUsuariosDao extends AbstractDao implements Dao<MigUsuario> {
     return null;
   }
 
+  public Optional<MigUsuario> getFromNameAndLastName(String name) throws SQLException {
+    PreparedStatement psfGetMigUsuario = null;
+
+    String sql = "select * from mig_usuarios " +
+      "where concat(nombres,' ',apellidos)=?";
+
+    psfGetMigUsuario = getConn().prepareStatement(sql);
+
+    psfGetMigUsuario.setString(1, name.toUpperCase());
+
+    ResultSet rsGetMigUsuario = psfGetMigUsuario.executeQuery();
+
+    if (rsGetMigUsuario.next()) {
+
+      MigUsuario migUsuario = new MigUsuario(
+        rsGetMigUsuario.getString("id"),
+        rsGetMigUsuario.getString("nombres"),
+        rsGetMigUsuario.getString("apellidos"),
+        rsGetMigUsuario.getString("email"),
+        rsGetMigUsuario.getString("username"));
+
+      DbUtils.close(psfGetMigUsuario);
+      DbUtils.close(rsGetMigUsuario);
+
+      return Optional.of(migUsuario);
+
+    }
+
+    return Optional.empty();
+  }
 }
