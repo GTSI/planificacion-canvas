@@ -29,7 +29,7 @@ public class MigUsuariosDao extends AbstractDao implements Dao<MigUsuario> {
          "and email is not null and email like '%@%' " +
          "and apellidos is not null " +
          "and nombres is not null " +
-         //"and  id='0915986087'" +
+         //"and  id='0925789562asdsad'" +
          "order by id;");
 
     ArrayList<MigUsuario> usuarios = new ArrayList<>();
@@ -45,6 +45,33 @@ public class MigUsuariosDao extends AbstractDao implements Dao<MigUsuario> {
 
     return usuarios;
   }
+
+  public List<MigUsuario> getAllPaginated(int page, int size) throws SQLException {
+    Statement stmtGetMigUsuarios = this.getConn().createStatement();
+    ResultSet rsGetMigUsuarios = stmtGetMigUsuarios.executeQuery(
+      "SELECT * FROM mig_usuarios  " +
+         "where id is not null  " +
+         "and email is not null and email like '%@%' " +
+         "and apellidos is not null " +
+         "and nombres is not null " +
+         //"and  id='0925789562asdsad'" +
+         "order by id" + 
+         " limit " + size + " offset " + page );
+
+    ArrayList<MigUsuario> usuarios = new ArrayList<>();
+
+    while (rsGetMigUsuarios.next()) {
+      usuarios.add(new MigUsuario(
+        rsGetMigUsuarios.getString("id"),
+        rsGetMigUsuarios.getString("nombres"),
+        rsGetMigUsuarios.getString("apellidos"),
+        rsGetMigUsuarios.getString("email"),
+        rsGetMigUsuarios.getString("username")));
+    }
+
+    return usuarios;
+  }
+
 
   @Override
   public long save(MigUsuario migUsuario) throws Exception {
