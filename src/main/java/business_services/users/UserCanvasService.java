@@ -166,7 +166,12 @@ public class UserCanvasService {
       conn.setAutoCommit(false);
       if(migUsuario.getUsername() != null) {
         List<Pseudonym> pseudonyms = pseudonymsDao.getAllPseudonymsFromMigUsuario(migUsuario);
-
+        if(pseudonyms.size() >1)  {
+          System.out.println("seudonimos de usuario...");
+          for(Pseudonym p: pseudonyms) {
+            System.out.println(p);
+          }
+        }
         if(!pseudonyms.isEmpty()) {
           Optional<User> optionalUser = userDao.get(pseudonyms.get(0).user_id);
           if(optionalUser.isPresent()) {
@@ -189,7 +194,7 @@ public class UserCanvasService {
               if(pseudonyms.size() == 1) {
                 Pseudonym pseudonym = pseudonyms.get(0);
                 pseudonym.unique_id = migUsuario.getUsername();
-                pseudonym.sis_user_id = pseudonym.sis_user_id.isEmpty()? migUsuario.getId(): pseudonym.sis_user_id;
+                pseudonym.sis_user_id = pseudonym.sis_user_id == null ? migUsuario.getId(): pseudonym.sis_user_id;
 
                 pseudonymsDao.update(pseudonym, null);
 
@@ -212,9 +217,9 @@ public class UserCanvasService {
             User user = optionalUser.get();
 
             Pseudonym pseudonym = pseudonyms.get(0);
-            pseudonym.sis_user_id = pseudonym.sis_user_id.isEmpty()? migUsuario.getId(): pseudonym.sis_user_id;
+            // pseudonym.sis_user_id = pseudonym.sis_user_id.isEmpty()? migUsuario.getId(): pseudonym.sis_user_id;
 
-            pseudonymsDao.update(pseudonym, null);
+            // pseudonymsDao.update(pseudonym, null);
           }
         }
       }

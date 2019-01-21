@@ -26,7 +26,7 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
     ArrayList<Pseudonym> pseudonyms = new ArrayList<>();
     Statement stmtGetPseudonym = getConn().createStatement();
     ResultSet rsGetPseudonym = stmtGetPseudonym.executeQuery(
-      "SELECT * FROM pseudonyms WHERE workflow_state<>'deleted' and sis_user_id='"+sis_user_id+"'");
+      "SELECT * FROM pseudonyms WHERE workflow_state<>'deleted' and sis_user_id like '%"+sis_user_id+"'");
 
     if(rsGetPseudonym.next()) {
       pseudonyms.add(new Pseudonym(
@@ -48,11 +48,11 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
   public @NotNull List<Pseudonym> getAllPseudonymsFromUniqueId(String unique_id) throws SQLException {
     ArrayList<Pseudonym> pseudonyms = new ArrayList<>();
 
-    String sql = "SELECT * FROM pseudonyms WHERE (unique_id=? or unique_id=concat(?, '@espol.edu.ec')) and workflow_state<>'deleted'";
+    String sql = "SELECT * FROM pseudonyms WHERE (lower(unique_id)=? or lower(unique_id)=concat(?, '@espol.edu.ec')) and workflow_state<>'deleted'";
     ResultSet rsGetPseudonym = null;
     PreparedStatement psfGetPseudonym = this.getConn().prepareStatement(sql);
-    psfGetPseudonym.setString(1, unique_id);
-    psfGetPseudonym.setString(2, unique_id);
+    psfGetPseudonym.setString(1, unique_id.toLowerCase().trim());
+    psfGetPseudonym.setString(2, unique_id.toLowerCase().trim());
 
     rsGetPseudonym = psfGetPseudonym.executeQuery();
 
@@ -76,11 +76,11 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
 
   public Optional<Pseudonym> getFromUniqueId(String unique_id) throws SQLException {
 
-    String sql = "SELECT * FROM pseudonyms WHERE (unique_id=? or unique_id=concat(?, '@espol.edu.ec')) and workflow_state<>'deleted'";
+    String sql = "SELECT * FROM pseudonyms WHERE (lower(unique_id)=? or lower(unique_id)=concat(?, '@espol.edu.ec')) and workflow_state<>'deleted'";
     ResultSet rsGetPseudonym = null;
     PreparedStatement psfGetPseudonym = this.getConn().prepareStatement(sql);
-    psfGetPseudonym.setString(1, unique_id);
-    psfGetPseudonym.setString(2, unique_id);
+    psfGetPseudonym.setString(1, unique_id.toLowerCase().trim());
+    psfGetPseudonym.setString(2, unique_id.toLowerCase().trim());
 
     rsGetPseudonym = psfGetPseudonym.executeQuery();
 
@@ -166,7 +166,7 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
         "WHERE p.workflow_state <>'deleted' and users.workflow_state<>'deleted' AND (lower(sis_user_id)=?)";
 
       psfGetPseudonym = this.getConn().prepareStatement(sql);
-      psfGetPseudonym.setString(1, sis_user_id.trim().toLowerCase());
+      psfGetPseudonym.setString(1, sis_user_id.trim().toLowerCase().trim());
     }
     else {
       sql = "SELECT * FROM pseudonyms p INNER JOIN users ON users.id = p.user_id " +
@@ -299,7 +299,7 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
     }
 
     if(pseudonyms.isEmpty()) {
-      pseudonyms.addAll(this.getAllPseudonymsFromNamesAndLastNames(estudiante.getNombres(), estudiante.getApellidos()));
+      //pseudonyms.addAll(this.getAllPseudonymsFromNamesAndLastNames(estudiante.getNombres(), estudiante.getApellidos()));
     }
 
     return new ArrayList<>(pseudonyms);
@@ -330,10 +330,11 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
     ArrayList<Pseudonym> pseudonyms = new ArrayList<>();
 
     String sql = "SELECT * FROM pseudonyms WHERE workflow_state<>'deleted' and user_id in (select id from users " +
-      "where upper(name)=?)";
+      "where upper(name) like ? or upper(name) like ?)";
     ResultSet rsGetPseudonym = null;
     PreparedStatement psfGetPseudonym = this.getConn().prepareStatement(sql);
-    psfGetPseudonym.setString(1, nombres + " " + apellidos);
+    psfGetPseudonym.setString(1, nombres + " " + apellidos + "%");
+    psfGetPseudonym.setString(2, apellidos + " " + nombres + "%");
 
     rsGetPseudonym = psfGetPseudonym.executeQuery();
 
