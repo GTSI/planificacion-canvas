@@ -64,5 +64,6 @@ fabric.properties
 
 src/main/java/db/config/database.yml
 src/main/resources/database.yml
+src/main/resources/configPlanificacion.yml
 
 target/
