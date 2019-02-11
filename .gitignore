@@ -67,3 +67,4 @@ secrets.yml
 .attach_pid13417
 src/main/resources/database.yml
 src/main/resources/configPlanificacion.yaml 
+src/main/resources/celex.yaml 
