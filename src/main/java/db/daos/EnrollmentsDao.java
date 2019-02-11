@@ -1,7 +1,6 @@
 package db.daos;
 
 import db.models.Enrollment;
-import helpers.CanvasConstants;
 import org.apache.commons.dbutils.DbUtils;
 
 import java.sql.*;
