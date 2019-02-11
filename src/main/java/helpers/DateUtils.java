@@ -32,4 +32,12 @@ public class DateUtils {
       }
     }
   }
+
+  public static Timestamp getTimeStampFromDateData(int year, int month, int day) {
+    Calendar cal = Calendar.getInstance();
+    cal.set(year, month, day);
+    Timestamp timestamp = new Timestamp(cal.getTimeInMillis());
+    return timestamp;
+  }
+
 }
