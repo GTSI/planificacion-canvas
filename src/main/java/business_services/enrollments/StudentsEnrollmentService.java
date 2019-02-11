@@ -209,6 +209,7 @@ public class StudentsEnrollmentService {
       List<MigParaleloEstudiante> estudiantes = migParaleloEstudianteDao.getMigParaleloEstudiantesFromMatricula(matricula);
       for(MigParaleloEstudiante estudiante: estudiantes) {
         try {
+          System.err.println("Curso: " + estudiante.getIdmateria());
           Course course = courseDao.getFromMigrationId(Long.toString(estudiante.getIdmateria())).get();
           CourseSection courseSection = courseSectionsDao.getFromCourseId(course.getId()).get();
           txCrearEnrollmentEstudiante(
@@ -216,6 +217,7 @@ public class StudentsEnrollmentService {
             course,
             courseSection);
         } catch(NoSuchElementException ex) {
+          ex.printStackTrace();
             System.err.println("Curso no existente para migparaleloestudiante... " + estudiante);
         }
       }

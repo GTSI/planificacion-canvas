@@ -18,8 +18,6 @@ public class Planificacion {
     UserCanvasService userService = UserCanvasService.getInstance(configDB.getConnectionDestino());
     assert userService != null;
 
-    //userService.actualizarUsuariosFromMigUsuarios();
-    //userService.migrarUsuarios(); // Creacion de Usuarios dentro del sistema canvas, tomando su informacion desde la tabla mig_usuarios
     //userService.printDuplicatesFromMigUsuarios();
 
     // userService.migrarUsuario("0930106000");
@@ -28,18 +26,21 @@ public class Planificacion {
     CoursesCanvasService coursesCanvasService = CoursesCanvasService.getInstance(configDB.getConnectionDestino(), planificacionConfig);
     assert coursesCanvasService != null;
 //
-    //coursesCanvasService.planificarCursos(CanvasConstants.TIPO_PLANIFICACION.MAESTRIAS);
 //
     TeacherEnrollmentsService teacherCanvasService = TeacherEnrollmentsService.getInstance(
       configDB.getConnectionDestino(), planificacionConfig);
-    //teacherCanvasService.crearEnrollments();
 //
     StudentsEnrollmentService studentsEnrollmentService = StudentsEnrollmentService.getInstance(
       configDB.getConnectionDestino(), planificacionConfig);
 
-    studentsEnrollmentService.crearEnrollments();
-//
-    //studentsEnrollmentService.enrollUnicoUsuarioPorMatricula("1205492661");
+
+/*      userService.actualizarUsuariosFromMigUsuarios();
+      userService.migrarUsuarios(); // Creacion de Usuarios dentro del sistema canvas, tomando su informacion desde la tabla mig_usuarios
+    coursesCanvasService.planificarCursos(CanvasConstants.TIPO_PLANIFICACION.MAESTRIAS);
+    teacherCanvasService.crearEnrollments();
+    studentsEnrollmentService.crearEnrollments();*/
+
+    studentsEnrollmentService.enrollUnicoUsuarioPorMatricula("0927236745");
 
     //studentsEnrollmentService.eliminarEnrollmentsInexistentes();
   }

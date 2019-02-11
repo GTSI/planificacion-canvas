@@ -185,7 +185,6 @@ public class UserCanvasService {
 
               userDao.update(user, null);
             } else {
-              System.err.println("No se puede actualizar user al  usuario " + user);
             }
 
             if(!PseudonymsHelper.hasUsernameAsUniqueId(pseudonyms, migUsuario.getUsername())) {
@@ -204,7 +203,6 @@ public class UserCanvasService {
                 pseudonymsDao.saveFromUserData(user, migUsuario);
               }
             } else {
-              System.err.println("No se puede agregar pseudonym al usuario " + user);
             }
           }
         }

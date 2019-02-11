@@ -237,4 +237,27 @@ public class Course {
     this.conclude_at = conclude_at;
     this.migration_id = migration_id;
   }
+
+  @Override
+  public String toString() {
+    return "Course{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", account_id=" + account_id +
+            ", workflow_state='" + workflow_state + '\'' +
+            ", syllabus_body='" + syllabus_body + '\'' +
+            ", allow_student_forum_attachments=" + allow_student_forum_attachments +
+            ", default_wiki_editing_roles='" + default_wiki_editing_roles + '\'' +
+            ", wiki_id=" + wiki_id +
+            ", allow_student_organized_groups=" + allow_student_organized_groups +
+            ", course_code='" + course_code + '\'' +
+            ", default_view='" + default_view + '\'' +
+            ", root_account_id=" + root_account_id +
+            ", enrollment_term_id=" + enrollment_term_id +
+            ", sis_teacher_id='" + sis_teacher_id + '\'' +
+            ", start_at=" + start_at +
+            ", conclude_at=" + conclude_at +
+            ", migration_id='" + migration_id + '\'' +
+            '}';
+  }
 }
