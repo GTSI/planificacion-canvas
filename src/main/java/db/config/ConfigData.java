@@ -9,9 +9,11 @@ public class ConfigData {
   private ConfigData(@NotNull String environment) {
     Map configDB = YAMLReader.readConfigFile("database.yml");
     Map configPlanificacion = YAMLReader.readConfigFile("configPlanificacion.yaml");
+    Map celexConfig = YAMLReader.readConfigFile("celex.yaml");
 
     this.planificacionDestino = (int)((Map)configPlanificacion.get("planificacion")).get("termino_destino");
     this.planificacionOrigen = (int)((Map)configPlanificacion.get("planificacion")).get("termino_origen");
+    this.celexDestino = (int)((Map)celexConfig.get("celex")).get("destino");
 
     Map destinoConfig = (Map) ((Map) configDB.get("destino")).get(environment);
     Map origenConfig = (Map) ((Map) configDB.get("origen")).get(environment);
@@ -39,6 +41,7 @@ public class ConfigData {
 
   public int planificacionOrigen = -1;
   public int planificacionDestino = -1;
+  public int celexDestino = -1;
   public String strConnDestino = null;
   public String strConnOrigen = null;
   public Map sshConnection = null;
