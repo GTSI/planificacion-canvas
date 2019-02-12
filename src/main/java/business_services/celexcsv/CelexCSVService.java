@@ -221,6 +221,13 @@ public class CelexCSVService {
                     courseSectionCreado.getId()
             ));
 
+            courseAccountAssociationDao.save(new CourseAccountAssociation(
+                    cursoCreado.getId(),
+                    CanvasConstants.CELEX_ACCOUNT_ID,
+                    courseSectionCreado.getId()
+            ));
+
+
             return cursoCreado;
 
         } catch (SQLException e) {
