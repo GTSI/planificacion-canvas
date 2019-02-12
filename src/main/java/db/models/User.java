@@ -1,26 +1,21 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.springframework.lang.Nullable;
 
 public class User {
 
   @Nullable
   public long id;
 
-  @NotNull
   public String name;
 
-  @NotNull
   public String sortable_name;
 
   @Nullable
   public String short_name;
 
-  @NotNull
   public String uuid;
 
-  @NotNull
   public String workflow_state;
 
   @Nullable

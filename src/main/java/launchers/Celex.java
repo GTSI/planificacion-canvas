@@ -17,10 +17,21 @@ public class Celex {
         CelexConfig celexConfig = CelexConfig.getInstance("development");
 
         CelexCSVService csvService = CelexCSVService.getInstance(configDB.getConnectionDestino(), celexConfig);
-        BufferedReader fileReader = CelexCSVReader.getFileReaderFromPath("C:/Users/ascacere/Downloads/celex.csv");
+        //BufferedReader fileReader = CelexCSVReader.getFileReaderFromPath("C:/Users/ascacere/Downloads/celex.csv");
+        BufferedReader fileReader = CelexCSVReader.getFileReaderFromPath("/home/sebas/Downloads/celex.csv");
+
 
         try {
+            /* CSV FILE FORMAT:
+            * coursename
+            * paralelo
+            * codigo
+            * cedula1
+            * cedula2
+            * cedula3
+            * */
             csvService.readCSVAndLoadCoursesWithData(fileReader);
-        } catch (IOException e) {}
+
+        } catch (IOException e) { e.printStackTrace(); }
     }
 }

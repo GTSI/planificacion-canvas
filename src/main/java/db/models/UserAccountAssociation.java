@@ -1,17 +1,14 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.springframework.lang.Nullable;
 
 public class UserAccountAssociation {
 
   @Nullable
   public long id;
 
-  @NotNull
   private long user_id;
 
-  @NotNull
   private long account_id;
 
   public UserAccountAssociation(long id, long user_id, long account_id) {

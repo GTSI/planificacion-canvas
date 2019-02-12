@@ -1,10 +1,10 @@
 package db.models;
 
 
+import org.springframework.lang.Nullable;
+
 import java.util.ArrayList;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 
 public class Estudiante {
 
@@ -19,10 +19,8 @@ public class Estudiante {
     correos = new ArrayList<>();
   }
 
-  @NotNull
   private String nombres;
 
-  @NotNull
   private String apellidos;
 
   @Nullable

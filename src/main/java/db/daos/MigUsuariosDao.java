@@ -1,8 +1,8 @@
 package db.daos;
 
-import com.sun.istack.internal.Nullable;
 import db.models.MigUsuario;
 import org.apache.commons.dbutils.DbUtils;
+import org.springframework.lang.Nullable;
 
 import java.sql.*;
 import java.util.ArrayList;

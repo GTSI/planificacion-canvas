@@ -1,20 +1,15 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
 
 
 public class MigParaleloProfesor {
 
-  @NotNull
   private String id;
 
-  @NotNull
   private String cedula;
 
-  @NotNull
   private int idmateria;
 
-  @NotNull
   private String materia;
 
   public String getId() {

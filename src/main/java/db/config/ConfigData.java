@@ -2,11 +2,8 @@ package db.config;
 
 import java.util.Map;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
-
 public class ConfigData {
-  private ConfigData(@NotNull String environment) {
+  private ConfigData(String environment) {
     Map configDB = YAMLReader.readConfigFile("database.yml");
     Map configPlanificacion = YAMLReader.readConfigFile("configPlanificacion.yaml");
     Map celexConfig = YAMLReader.readConfigFile("celex.yaml");
@@ -48,7 +45,7 @@ public class ConfigData {
   public static ConfigData singleton = null;
 
   // environment can be 'development' or 'production'
-  public static synchronized ConfigData getInstance(@Nullable String environment) {
+  public static synchronized ConfigData getInstance(String environment) {
     if (singleton == null) {
       singleton = new ConfigData(environment);
     }

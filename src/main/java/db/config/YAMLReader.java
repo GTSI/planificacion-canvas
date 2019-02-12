@@ -1,6 +1,6 @@
 package db.config;
 
-import com.sun.istack.internal.Nullable;
+import org.springframework.lang.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;

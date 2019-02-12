@@ -1,17 +1,14 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.springframework.lang.Nullable;
 
 public class Wiki {
 
   @Nullable
   private long id;
 
-  @NotNull
   private String title;
 
-  @NotNull
   private boolean has_no_front_page;
 
   @Nullable

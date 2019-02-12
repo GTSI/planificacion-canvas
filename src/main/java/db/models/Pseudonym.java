@@ -1,7 +1,7 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+
+import org.springframework.lang.Nullable;
 
 import java.util.Objects;
 
@@ -11,25 +11,19 @@ public class Pseudonym {
   public long id;
 
 
-  @NotNull
   public long user_id;
 
-  @NotNull
   public long account_id;
 
-  @NotNull
   public String unique_id;
 
-  @NotNull
   public String crypted_password;
 
   @Nullable
   public String password_salt;
 
-  @NotNull
   public long login_count;
 
-  @NotNull
   public String sis_user_id;
 
   @Nullable
@@ -56,15 +50,15 @@ public class Pseudonym {
   @Override
   public String toString() {
     return "Pseudonym " +
-      "id=" + id +
-      ", user_id=" + user_id +
-      ", account_id=" + account_id +
-      ", unique_id='" + unique_id + '\'' +
-      ", crypted_password='" + crypted_password + '\'' +
-      ", password_salt='" + password_salt + '\'' +
-      ", login_count=" + login_count +
-      ", sis_user_id='" + sis_user_id + '\'' +
-      ", communication_channel_id=" + communication_channel_id ;
+            "id=" + id +
+            ", user_id=" + user_id +
+            ", account_id=" + account_id +
+            ", unique_id='" + unique_id + '\'' +
+            ", crypted_password='" + crypted_password + '\'' +
+            ", password_salt='" + password_salt + '\'' +
+            ", login_count=" + login_count +
+            ", sis_user_id='" + sis_user_id + '\'' +
+            ", communication_channel_id=" + communication_channel_id ;
   }
 
   @Override
@@ -73,7 +67,7 @@ public class Pseudonym {
     if (o == null || getClass() != o.getClass()) return false;
     Pseudonym pseudonym = (Pseudonym) o;
     return user_id == pseudonym.user_id &&
-      Objects.equals(unique_id, pseudonym.unique_id);
+            Objects.equals(unique_id, pseudonym.unique_id);
   }
 
   @Override

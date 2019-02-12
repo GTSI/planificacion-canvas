@@ -1,26 +1,21 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.springframework.lang.Nullable;
 
 public class MigMateriaParalelo {
 
-  @NotNull
   private int paralelo;
 
   @Nullable
   private String codigos_carreras;
 
-  @NotNull
   private String codigo_materia;
 
-  @NotNull
   private String nombre;
 
   @Nullable
   private int paralelo_ktl;
 
-  @NotNull
   private int idmateria;
 
   public MigMateriaParalelo(int paralelo, String codigos_carreras, String codigo_materia, String nombre, int paralelo_ktl, int idmateria) {

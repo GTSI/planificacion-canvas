@@ -1,29 +1,24 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+
+import org.springframework.lang.Nullable;
 
 public class Folder {
 
   @Nullable
   public long id;
 
-  @NotNull
   public String name;
 
-  @NotNull
   public String full_name;
 
-  @NotNull
   public long context_id;
 
-  @NotNull
   public String context_type;
 
   @Nullable
   public long parent_folder_id;
 
-  @NotNull
   public String workflow_state;
 
   @Nullable

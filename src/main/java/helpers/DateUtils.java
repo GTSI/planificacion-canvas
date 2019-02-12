@@ -1,6 +1,5 @@
 package helpers;
 
-import com.sun.istack.internal.NotNull;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -10,7 +9,7 @@ public class DateUtils {
   public enum TypeOperation {
     ADD, SUBSTRACT
   }
-  public static void modifyTimestamp(@NotNull Timestamp time, TypeOperation type, int number_days) {
+  public static void modifyTimestamp(Timestamp time, TypeOperation type, int number_days) {
     Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("America/Los_Angeles"));
     calendar.setTimeInMillis(time.getTime());
     switch (type) {

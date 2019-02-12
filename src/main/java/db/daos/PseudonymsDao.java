@@ -1,7 +1,6 @@
 package db.daos;
 
 import business_services.users.data.PasswordData;
-import com.sun.istack.internal.NotNull;
 import db.models.MigParaleloEstudiante;
 import db.models.MigUsuario;
 import db.models.Pseudonym;
@@ -45,7 +44,7 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
     return pseudonyms;
   }
 
-  public @NotNull List<Pseudonym> getAllPseudonymsFromUniqueId(String unique_id) throws SQLException {
+  public List<Pseudonym> getAllPseudonymsFromUniqueId(String unique_id) throws SQLException {
     ArrayList<Pseudonym> pseudonyms = new ArrayList<>();
 
     String sql = "SELECT * FROM pseudonyms WHERE (unique_id=? or unique_id=concat(?, '@espol.edu.ec')) and workflow_state<>'deleted'";
@@ -156,7 +155,7 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
     return 0;
   }
 
-  public boolean userExistsByUniqueId(@NotNull  String unique_id, @NotNull String sis_user_id) throws SQLException {
+  public boolean userExistsByUniqueId(String unique_id, String sis_user_id) throws SQLException {
     String sql;
 
     ResultSet rsGetPseudonym = null;
@@ -326,7 +325,7 @@ public class PseudonymsDao extends AbstractDao implements Dao<Pseudonym> {
     return null;
   }
 
-  public @NotNull List<Pseudonym> getAllPseudonymsFromNamesAndLastNames(String nombres, String apellidos) throws SQLException {
+  public List<Pseudonym> getAllPseudonymsFromNamesAndLastNames(String nombres, String apellidos) throws SQLException {
     ArrayList<Pseudonym> pseudonyms = new ArrayList<>();
 
     String sql = "SELECT * FROM pseudonyms WHERE workflow_state<>'deleted' and user_id in (select id from users " +

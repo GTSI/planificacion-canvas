@@ -1,17 +1,11 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-
 public class CourseAccountAssociation {
 
-  @NotNull
   private long course_id;
 
-
-  @NotNull
   private long account_id;
 
-  @NotNull
   private long course_section_id;
 
   public CourseAccountAssociation(long course_id,
