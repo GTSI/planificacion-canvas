@@ -1,8 +1,7 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 
+import org.springframework.lang.Nullable;
 
 public class CommunicationChannel {
 
@@ -10,22 +9,16 @@ public class CommunicationChannel {
   public long id;
 
 
-  @NotNull
   private String path;
 
-  @NotNull
   private String path_type;
 
-  @NotNull
   private int position;
 
-  @NotNull
   private long user_id;
 
-  @NotNull
   private long pseudonym_id;
 
-  @NotNull
   private String workflow_state;
 
   public CommunicationChannel(long id, String path, String path_type, int position, long user_id, long pseudonym_id, String workflow_state) {

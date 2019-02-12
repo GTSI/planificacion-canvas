@@ -1,7 +1,6 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.springframework.lang.Nullable;
 
 public class MigUsuario {
 
@@ -38,10 +37,8 @@ public class MigUsuario {
     }
   }
 
-  @NotNull
   private String nombres;
 
-  @NotNull
   private String apellidos;
 
   @Nullable

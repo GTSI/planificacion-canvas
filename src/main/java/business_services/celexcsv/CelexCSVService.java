@@ -1,17 +1,9 @@
 package business_services.celexcsv;
 
-
         import business_services.celexcsv.data.CourseCelexCSVData;
-        import business_services.courses.data.CourseData;
-        import business_services.courses.data.MigParaleloProfesorData;
-        import com.sun.istack.internal.NotNull;
         import db.config.CelexConfig;
-        import db.config.PlanificacionConfig;
         import db.daos.*;
-        import db.models.Course;
-        import db.models.CourseAccountAssociation;
-        import db.models.CourseSection;
-        import db.models.Wiki;
+        import db.models.*;
         import helpers.CanvasConstants;
         import helpers.DateUtils;
 
@@ -20,7 +12,9 @@ package business_services.celexcsv;
         import java.sql.Connection;
         import java.sql.SQLException;
         import java.sql.Timestamp;
+        import java.util.ArrayList;
         import java.util.List;
+        import java.util.Optional;
 
 public class CelexCSVService {
     private UserDao userDao;
@@ -33,6 +27,9 @@ public class CelexCSVService {
     private WikisDao wikisDao;
     private CourseSectionsDao courseSectionsDao;
     private CourseAccountAssociationDao courseAccountAssociationDao;
+    private EnrollmentsDao enrollmentsDao;
+    private EnrollmentStateDao enrollmentStateDao;
+    private RolesDao rolesDao;
 
     private int terminoDestino = -1;
 
@@ -48,7 +45,11 @@ public class CelexCSVService {
                                  CourseDao courseDao,
                                  WikisDao wikisDao,
                                  CourseSectionsDao courseSectionDao,
-                                 CourseAccountAssociationDao courseAccountAssociationDao, int terminoDestino
+                                 CourseAccountAssociationDao courseAccountAssociationDao,
+                                 EnrollmentsDao enrollmentsDao,
+                                 EnrollmentStateDao enrollmentStateDao,
+                                 RolesDao rolesDao,
+                                 int terminoDestino
     ) throws SQLException {
         this.userDao = userDao;
         this.pseudonymsDao = pseudonymsDao;
@@ -62,6 +63,9 @@ public class CelexCSVService {
         this.courseSectionsDao = courseSectionDao;
         this.courseAccountAssociationDao = courseAccountAssociationDao;
         this.terminoDestino = terminoDestino;
+        this.enrollmentsDao = enrollmentsDao;
+        this.rolesDao = rolesDao;
+        this.enrollmentStateDao = enrollmentStateDao;
     }
 
     public static CelexCSVService getInstance(Connection conn, CelexConfig celexConfig) throws SQLException {
@@ -76,29 +80,91 @@ public class CelexCSVService {
                     new CourseDao(conn),
                     new WikisDao(conn),
                     new CourseSectionsDao(conn),
-                    new CourseAccountAssociationDao(conn), celexConfig.getDestino());
+                    new CourseAccountAssociationDao(conn),
+                    new EnrollmentsDao(conn),
+                    new EnrollmentStateDao(conn),
+                    new RolesDao(conn),
+                    celexConfig.getDestino());
         }
 
         return instance;
     }
 
-    public void readCSVAndLoadCoursesWithData(BufferedReader fileReader) throws IOException {
+    public void readCSVAndLoadCoursesWithData(BufferedReader fileReader) throws IOException, SQLException {
         fileReader.readLine(); // skip title
         String line = "";
         while((line = fileReader.readLine()) != null) {
             String[] courseData = line.split(",");
 
-            txCrearCursoFromCSV(courseData, 2019, 02,12);
+            CourseCelexCSVData celexCSVData = new CourseCelexCSVData(courseData[0], courseData[1], courseData[2], courseData[3], courseData[4], courseData[5]);
+            Course curso_creado = txCrearCursoFromCSV(celexCSVData, 2019, 02,12);
+            Optional<CourseSection> optionalCourseSection = courseSectionsDao.getFromCourseId(curso_creado.getId());
+
+            List<Pseudonym> listPsTeachers = new ArrayList<>();
+            listPsTeachers.add(pseudonymsDao.getPseudonymFromSisUserId(courseData[3]));
+            listPsTeachers.add(pseudonymsDao.getPseudonymFromSisUserId(courseData[4]));
+            listPsTeachers.add(pseudonymsDao.getPseudonymFromSisUserId(courseData[5]));
+
+            for(Pseudonym teacher: listPsTeachers) {
+                txCrearEnrollmentFromPseudonym(curso_creado, optionalCourseSection.get(), teacher);
+            }
+        }
+
+    }
+    private void txCrearEnrollmentFromPseudonym(Course course, CourseSection courseSection, Pseudonym ps) {
+
+        Connection conn = userDao.getConn();
+        try {
+            conn.setAutoCommit(false);
+
+            Roles roleEstudiante = rolesDao.getFromName("TeacherEnrollment");
+
+            long enrollment_id = enrollmentsDao.save(new Enrollment(
+                    -1,
+                    ps.user_id,
+                    course.getId(),
+                    roleEstudiante.getName(),
+                    null,// uuid nunca se toca.
+                    "active" ,
+                    courseSection.getId(),
+                    CanvasConstants.PARENT_ACCOUNT_ID,
+                    "unpublished",
+                    false,
+                    roleEstudiante.getId(),
+                    true ));
+
+            enrollmentStateDao.saveAndRetrieveIntance(new EnrollmentState(
+                    enrollment_id,
+                    "active",
+                    true,
+                    course.getStart_at(),
+                    course.getConclude_at(),
+                    false,
+                    true,
+                    1));
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                System.err.println("transaccion del enrollment " + ps + " no se pudo realizar!");
+                conn.rollback();
+            } catch (SQLException excep) { }
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
-    private void txCrearCursoFromCSV(@NotNull String[] courseData,
+    private Course txCrearCursoFromCSV(CourseCelexCSVData celexCSVData,
                                      int yearStart,
                                      int monthStart,
                                      int dayStart) {
 
-        CourseCelexCSVData celexCSVData = new CourseCelexCSVData(courseData[0], courseData[1], courseData[2], courseData[3], courseData[4], courseData[5]);
 
         Timestamp start_at = DateUtils.getTimeStampFromDateData(yearStart, monthStart, dayStart);
         Timestamp end_at = DateUtils.getTimeStampFromDateData(yearStart, monthStart, dayStart);
@@ -155,6 +221,8 @@ public class CelexCSVService {
                     courseSectionCreado.getId()
             ));
 
+            return cursoCreado;
+
         } catch (SQLException e) {
             e.printStackTrace();
             try {
@@ -168,6 +236,8 @@ public class CelexCSVService {
                 e.printStackTrace();
             }
         }
+
+        return null;
     }
 
 }

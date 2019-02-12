@@ -2,7 +2,6 @@ package business_services.courses;
 
   import business_services.courses.data.CourseData;
   import business_services.courses.data.MigParaleloProfesorData;
-  import com.sun.istack.internal.NotNull;
   import db.config.PlanificacionConfig;
   import db.daos.*;
   import db.models.Course;
@@ -81,7 +80,7 @@ public class CoursesCanvasService {
   }
 
   /* Metodo usado para obtener los paralelos planificados dentro del termino. */
-  public @NotNull List<MigParaleloProfesorData> obtenerParalelosPlanificadosMaestrias() {
+  public List<MigParaleloProfesorData> obtenerParalelosPlanificadosMaestrias() {
     try {
       assert migMateriaParaleloDao != null;
       return migMateriaParaleloDao.getCourseAndTeachersFromMigsMaetrias();
@@ -93,7 +92,7 @@ public class CoursesCanvasService {
   }
 
   /* Metodo utilizado para planificar los cursos */
-  public void planificarCursos(@NotNull CanvasConstants.TIPO_PLANIFICACION tipo_planificacion) {
+  public void planificarCursos(CanvasConstants.TIPO_PLANIFICACION tipo_planificacion) {
 
     switch(tipo_planificacion) {
       case PREGRADO: {
@@ -120,7 +119,7 @@ public class CoursesCanvasService {
 
   private void planificarMaestrias() {
 
-    @NotNull List<MigParaleloProfesorData> paralelosPlanificados =  obtenerParalelosPlanificadosMaestrias();
+    List<MigParaleloProfesorData> paralelosPlanificados =  obtenerParalelosPlanificadosMaestrias();
 
     System.out.println("INICIO DE PLANIFICACION");
 
@@ -151,7 +150,7 @@ public class CoursesCanvasService {
     }
   }
 
-  private void txCrearCursoMaestria(@NotNull MigParaleloProfesorData paralelo) {
+  private void txCrearCursoMaestria(MigParaleloProfesorData paralelo) {
     Connection conn = userDao.getConn();
 
     try {

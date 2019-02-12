@@ -1,7 +1,6 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.springframework.lang.Nullable;
 
 import java.sql.Timestamp;
 
@@ -10,49 +9,36 @@ public class Course {
   @Nullable
   private long id;
 
-  @NotNull
   private String name;
 
-  @NotNull
   private long account_id;
 
-  @NotNull
   private String workflow_state;
 
   @Nullable
   private String syllabus_body;
 
-  @NotNull
   private boolean allow_student_forum_attachments;
 
-  @NotNull
   private String default_wiki_editing_roles;
 
   @Nullable
   private long wiki_id;
 
-  @NotNull
   private boolean allow_student_organized_groups;
 
-  @NotNull
   private String course_code;
 
-  @NotNull
   private String default_view;
 
-  @NotNull
   private long root_account_id;
 
-  @NotNull
   private long enrollment_term_id;
 
-  @NotNull
   private String tab_configuration;
 
-  @NotNull
   private String sis_teacher_id;
 
-  @NotNull
   private Timestamp start_at, conclude_at;
 
   @Nullable

@@ -1,15 +1,12 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
 
 public class Roles {
 
-  @NotNull
   private long id;
 
   private String workflow_state;
 
-  @NotNull
   private String name;
 
   public long getId() {

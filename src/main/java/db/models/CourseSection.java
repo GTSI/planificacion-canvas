@@ -1,7 +1,6 @@
 package db.models;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.springframework.lang.Nullable;
 
 import java.sql.Timestamp;
 
@@ -10,25 +9,18 @@ public class CourseSection {
   @Nullable
   private long id;
 
-  @NotNull
   private long course_id;
 
-  @NotNull
   private long root_account_id;
 
-  @NotNull
   private long enrollment_term_id;
 
-  @NotNull
   private String name;
 
-  @NotNull
   private boolean default_section;
 
-  @NotNull
   private Timestamp start_at;
 
-  @NotNull
   private Timestamp end_at;
 
   public CourseSection(long id,
