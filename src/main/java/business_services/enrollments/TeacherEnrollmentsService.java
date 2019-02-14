@@ -24,6 +24,7 @@ public class TeacherEnrollmentsService {
   private EnrollmentsDao enrollmentsDao;
   private PseudonymsDao pseudonymsDao;
   private EnrollmentStateDao enrollmentStateDao;
+  private UserDao userDao;
 
   private static TeacherEnrollmentsService instance;
 
@@ -36,6 +37,7 @@ public class TeacherEnrollmentsService {
     EnrollmentsDao enrollmentsDao,
     PseudonymsDao pseudonymsDao,
     EnrollmentStateDao enrollmentStateDao,
+    UserDao userDao,
     int terminoOrigen, int terminoDestino
   ) {
     this.terminoDestino = terminoDestino;
@@ -48,6 +50,7 @@ public class TeacherEnrollmentsService {
     this.enrollmentsDao = enrollmentsDao;
     this.pseudonymsDao = pseudonymsDao;
     this.enrollmentStateDao = enrollmentStateDao;
+    this.userDao = userDao;
   }
 
   public static TeacherEnrollmentsService getInstance(
@@ -63,6 +66,7 @@ public class TeacherEnrollmentsService {
         new EnrollmentsDao(conn),
         new PseudonymsDao(conn),
         new EnrollmentStateDao(conn),
+        new UserDao(conn),
         planificacionConfig.getOrigen(), planificacionConfig.getDestino());
     }
 
@@ -89,6 +93,63 @@ public class TeacherEnrollmentsService {
         for(MigParaleloProfesor profesor: profesores) {
           txCrearEnrollmentProfesor(profesor, course, courseSection);
         }
+      }
+    }
+  }
+
+  public void txCrearEnrollmentProfesorFromUserId(long user_id, long course_id) {
+    Connection conn = rolesDao.getConn();
+    try {
+      conn.setAutoCommit(false);
+
+      User usuario = userDao.get(user_id).get();
+      Course course = courseDao.get(course_id).get();
+      CourseSection section = courseSectionsDao.getFromCourseId(course_id).get();
+
+      Roles roleTeacher = rolesDao.getFromName("TeacherEnrollment");
+
+      if(usuario != null) {
+        System.out.println("Creando enrollment" + usuario);
+
+          long enrollment_id = enrollmentsDao.save(new Enrollment(
+                  -1,
+                  usuario.id,
+                  course_id,
+                  roleTeacher.getName(),
+                  null,// uuid nunca se toca.
+                  "active" ,
+                  section.getId(),
+                  CanvasConstants.PARENT_ACCOUNT_ID,
+                  "unpublished",
+                  false,
+                  roleTeacher.getId(),
+                  true ));
+
+          enrollmentStateDao.saveAndRetrieveIntance(new EnrollmentState(
+                  enrollment_id,
+                  "active",
+                  true,
+                  course.getStart_at(),
+                  course.getConclude_at(),
+                  false,
+                  true,
+                  1));
+
+        } else {
+          System.err.println("Usuario no existe " + usuario);
+        }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+      try {
+        System.err.println("transaccion del enrollment " + " no se pudo realizar!");
+        conn.rollback();
+      } catch (SQLException excep) { }
+    } finally {
+      try {
+        conn.setAutoCommit(true);
+      } catch (SQLException e) {
+        e.printStackTrace();
       }
     }
   }

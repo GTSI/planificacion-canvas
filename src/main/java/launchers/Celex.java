@@ -13,12 +13,12 @@ public class Celex {
 
     public static void main(String[] args) throws SQLException {
 
-        DBConnection configDB = DBConnection.getInstance("development");
-        CelexConfig celexConfig = CelexConfig.getInstance("development");
+        DBConnection configDB = DBConnection.getInstance("production");
+        CelexConfig celexConfig = CelexConfig.getInstance("production");
 
         CelexCSVService csvService = CelexCSVService.getInstance(configDB.getConnectionDestino(), celexConfig);
-        //BufferedReader fileReader = CelexCSVReader.getFileReaderFromPath("C:/Users/ascacere/Downloads/celex.csv");
-        BufferedReader fileReader = CelexCSVReader.getFileReaderFromPath("/home/sebas/Downloads/celex.csv");
+        BufferedReader fileReader = CelexCSVReader.getFileReaderFromPath("C:/Users/ascacere/Downloads/celex.csv");
+        //BufferedReader fileReader = CelexCSVReader.getFileReaderFromPath("/home/sebas/Downloads/celex.csv");
 
 
         try {
