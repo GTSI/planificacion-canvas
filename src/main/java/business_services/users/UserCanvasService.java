@@ -188,7 +188,7 @@ public class UserCanvasService {
 
               userDao.update(user, null);
             } else {
-              System.err.println("No se puede actualizar user al  usuario " + user);
+              //System.err.println("No se puede actualizar user al  usuario " + user);
             }
 
             if(!PseudonymsHelper.hasUsernameAsUniqueId(pseudonyms, migUsuario.getUsername())) {
@@ -204,10 +204,10 @@ public class UserCanvasService {
                 long idComm = communicationChannelDao.saveFromUserData(user, migUsuario);
                 if(idComm == -1) System.err.println("No se pudo crear el communication channel nuevo");
               } else {
-                pseudonymsDao.saveFromUserData(user, migUsuario);
+                //pseudonymsDao.saveFromUserData(user, migUsuario);
               }
             } else {
-              System.err.println("No se puede agregar pseudonym al usuario " + user);
+              //System.err.println("No se puede agregar pseudonym al usuario " + user);
             }
           }
         }
@@ -226,6 +226,14 @@ public class UserCanvasService {
           }
         }
       }
+
+    } catch(NullPointerException e) {
+      e.printStackTrace();
+
+      try {
+        System.err.println("actualizacion del migUsuario " + migUsuario + " no se pudo realizar!");
+        conn.rollback();
+      } catch (SQLException excep) { }
 
     } catch (SQLException e) {
       e.printStackTrace();

@@ -132,20 +132,14 @@ public class CourseDao extends AbstractDao implements Dao<Course>{
     String sql = "SELECT c.id , c.sis_teacher_id, c.default_view, c.wiki_id, c.migration_id, c.uuid"
       +" FROM courses c"
       +" INNER JOIN course_sections cs ON c.id = cs.course_id"
-      +" AND UPPER(cs.name)=?"
-      +" AND c.course_code=?"
       +" AND c.enrollment_term_id=?"
-      +" AND c.root_account_id=?"
       +" AND c.workflow_state<>'deleted'"
       +" AND c.migration_id=?;";
 
     ResultSet rsGetCourses = null;
     PreparedStatement psfGetCourses = this.getConn().prepareStatement(sql);
-    psfGetCourses.setString(1,"PARALELO " + migParaleloProfesorData.paralelo );
-    psfGetCourses.setString(2, migParaleloProfesorData.codigo);
-    psfGetCourses.setLong(3, enrollment_term_id);
-    psfGetCourses.setLong(4, CanvasConstants.PARENT_ACCOUNT_ID);
-    psfGetCourses.setString(5, Long.toString(migParaleloProfesorData.idmateria));
+    psfGetCourses.setLong(1, enrollment_term_id);
+    psfGetCourses.setString(2, Long.toString(migParaleloProfesorData.idmateria));
 
     rsGetCourses = psfGetCourses.executeQuery();
 

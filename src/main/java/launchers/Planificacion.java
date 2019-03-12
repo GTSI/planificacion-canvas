@@ -1,8 +1,12 @@
 package launchers;
 
+import business_services.courses.CoursesCanvasService;
+import business_services.enrollments.StudentsEnrollmentService;
 import business_services.enrollments.TeacherEnrollmentsService;
+import business_services.users.UserCanvasService;
 import db.DBConnection;
 import db.config.PlanificacionConfig;
+import helpers.CanvasConstants;
 
 import java.sql.SQLException;
 
@@ -11,8 +15,28 @@ public class Planificacion {
         DBConnection configDB = DBConnection.getInstance("production");
         PlanificacionConfig planificacionConfig = PlanificacionConfig.getInstance("production");
 
-        TeacherEnrollmentsService teacherEnrollmentsService = TeacherEnrollmentsService.getInstance(configDB.getConnectionDestino(), planificacionConfig);
+        UserCanvasService userService = UserCanvasService.getInstance(configDB.getConnectionDestino());
+        assert userService != null;
 
-        teacherEnrollmentsService.txCrearEnrollmentProfesorFromUserId(42218,24230);
+        userService.actualizarUsuariosFromMigUsuarios();
+        userService.migrarUsuarios(); // Creacion de Usuarios dentro del sistema canvas, tomando su informacion desde la tabla mig_usuarios
+        userService.printDuplicatesFromMigUsuarios();
+//
+//        // userService.migrarUsuario("0930106000");
+//
+//        // una vez migrados los usuarios realizamos la creacion de los cursos
+        CoursesCanvasService coursesCanvasService = CoursesCanvasService.getInstance(configDB.getConnectionDestino(), planificacionConfig);
+        assert coursesCanvasService != null;
+////
+        coursesCanvasService.planificarCursos(CanvasConstants.TIPO_PLANIFICACION.MAESTRIAS);
+////
+        TeacherEnrollmentsService teacherCanvasService = TeacherEnrollmentsService.getInstance(
+                configDB.getConnectionDestino(), planificacionConfig);
+        teacherCanvasService.crearEnrollments();
+////
+        StudentsEnrollmentService studentsEnrollmentService = StudentsEnrollmentService.getInstance(
+                configDB.getConnectionDestino(), planificacionConfig);
+//
+        studentsEnrollmentService.crearEnrollments();
     }
 }
